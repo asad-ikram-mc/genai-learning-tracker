@@ -173,8 +173,8 @@ function requireAuth(fn){
 }
 function authAction(){
   const pw=document.getElementById('authInput').value;if(!pw){document.getElementById('authErr').textContent='Enter a password';return}
-  if(needsSetup()){localStorage.setItem(AK,hashPw(pw));sessionStorage.setItem('unlocked','1');closeAuth();if(pendingAction){pendingAction();pendingAction=null}render();return}
-  if(hashPw(pw)===localStorage.getItem(AK)){sessionStorage.setItem('unlocked','1');closeAuth();if(pendingAction){pendingAction();pendingAction=null}render();return}
+  if(needsSetup()){localStorage.setItem(AK,hashPw(pw));sessionStorage.setItem('unlocked','1');const fn=pendingAction;pendingAction=null;closeAuth();if(fn)fn();render();return}
+  if(hashPw(pw)===localStorage.getItem(AK)){sessionStorage.setItem('unlocked','1');const fn=pendingAction;pendingAction=null;closeAuth();if(fn)fn();render();return}
   document.getElementById('authErr').textContent='Wrong password';
 }
 function closeAuth(){document.getElementById('authModal').classList.remove('show');document.getElementById('authInput').value='';document.getElementById('authErr').textContent='';pendingAction=null}
@@ -310,7 +310,7 @@ function sv(k,v){localStorage.setItem(k,JSON.stringify(v))}
 function dayNum(){return Math.floor((new Date()-new Date(SD+'T00:00:00'))/864e5)+1}
 function fmt(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
 function getPace(){return ld(PK,1)}
-function setPace(v){requireAuth(()=>{sv(PK,v);render()})}
+function setPace(v){sv(PK,v);render()}
 let af='all',cs=ld(CK,{});
 function getGreeting(){const h=new Date().getHours();if(h<5)return'Burning the midnight oil';if(h<12)return'Rise and grind';if(h<17)return'Let\u2019s get it';if(h<21)return'Evening mode activated';return'Late night hustle'}
 function prj(){const pr=ld(SK,{}),pace=getPace(),rem=C.filter(c=>!pr[c.d]).length,dn=Math.ceil(rem/pace),ed=new Date();ed.setDate(ed.getDate()+dn);return{rem,dn,ed,pace}}
