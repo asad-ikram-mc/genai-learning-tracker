@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asad's GenAI Learning Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3a;--text:#e8e8f0;--text-dim:#7a7a8e;
+--accent:#00f0ff;--accent2:#7b61ff;--accent3:#ff6b9d;--done:#00e676;--phase1:#00f0ff;--phase2:#7b61ff;--phase3:#ff6b9d}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(0,240,255,0.06),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(123,97,255,0.06),transparent 50%);pointer-events:none;z-index:0}
+.w{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.greeting{padding:2.5rem 2rem 0.5rem;text-align:center}
+.greeting h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-1px;animation:titleIn 1s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes titleIn{0%{opacity:0;transform:translateY(20px) scale(0.95);filter:blur(8px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+.greeting h1 .name{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:titleIn 1s cubic-bezier(0.16,1,0.3,1) both,shimmer 4s ease-in-out infinite 1s}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.greeting .tagline{color:var(--text-dim);font-size:0.7rem;margin-top:0.3rem;letter-spacing:1px;animation:fs 0.8s 0.3s both}
+.greeting .motivation{margin-top:0.6rem;font-size:0.75rem;color:var(--text-dim);line-height:1.6;max-width:700px;margin-left:auto;margin-right:auto;animation:fs 0.8s 0.5s both}
+@keyframes fs{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.greeting .motivation span{color:var(--accent)}
+/* LOCK BANNER */
+.lock-banner{background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.3);border-radius:10px;padding:0.6rem 1rem;margin:0.5rem 2rem;text-align:center;font-size:0.65rem;color:var(--accent3);display:none}
+.lock-banner.show{display:block}
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0.6rem;padding:1rem 2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.7rem 0.9rem;transition:border-color 0.3s}.stat-card:hover{border-color:var(--accent)}
+.stat-label{font-size:0.5rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim)}
+.stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-top:0.1rem}
+.c1{color:var(--phase1)}.c2{color:var(--phase2)}.c3{color:var(--phase3)}.cw{color:var(--text)}.cg{color:var(--done)}
+.tl-section{padding:0.8rem 2rem}
+.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem}
+.tl-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.8rem}
+.tl-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
+.tl-dates{font-size:0.6rem;color:var(--text-dim)}.tl-dates span{color:var(--accent);font-weight:700}
+.meter{height:10px;background:var(--surface2);border-radius:5px;position:relative;margin-bottom:0.4rem;overflow:visible}
+.meter-fill{height:100%;border-radius:5px;transition:width 0.6s cubic-bezier(0.22,1,0.36,1);background:linear-gradient(90deg,var(--phase1),var(--phase2),var(--phase3))}
+.meter-fill::after{content:'';position:absolute;right:0;top:-1px;bottom:-1px;width:3px;background:#fff;border-radius:2px;box-shadow:0 0 8px #fff}
+.meter-today{position:absolute;top:-4px;width:2px;height:18px;background:var(--accent3);border-radius:1px;transition:left 0.6s;z-index:2}
+.meter-today::after{content:'today';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:0.4rem;color:var(--accent3);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.meter-gifts{display:flex;position:relative;height:22px;margin-bottom:0.3rem}
+.meter-gift{position:absolute;transform:translateX(-50%);cursor:pointer;font-size:1.1rem;transition:transform 0.2s;filter:drop-shadow(0 0 4px rgba(0,240,255,0.3))}.meter-gift:hover{transform:translateX(-50%) scale(1.3)}.meter-gift.locked{opacity:0.25;filter:none}
+.tl-stats{display:flex;gap:1.2rem;flex-wrap:wrap}
+.ts{display:flex;flex-direction:column}.ts-v{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}.ts-l{font-size:0.45rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:0.05rem}
+.pace-section{padding:0.6rem 2rem}
+.pace-card{background:linear-gradient(135deg,rgba(123,97,255,0.06),rgba(255,107,157,0.06));border:1px solid rgba(123,97,255,0.2);border-radius:14px;padding:1rem 1.4rem}
+.pace-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.6rem}
+.pace-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem}
+.pace-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--accent2)}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--surface2);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 10px rgba(123,97,255,0.3)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg)}
+.pace-chips{display:flex;gap:0.8rem;margin-top:0.6rem;flex-wrap:wrap}
+.pchip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;display:flex;flex-direction:column;align-items:center;min-width:70px}
+.pchip strong{font-family:'Syne',sans-serif;font-size:0.95rem;color:var(--accent)}.pchip span{font-size:0.45rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:0.05rem}
+.milestones{display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap}
+.gift{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.35rem 0.6rem;font-size:0.6rem;display:flex;align-items:center;gap:0.3rem;transition:all 0.3s;cursor:pointer}
+.gift.unlocked{border-color:var(--done);background:rgba(0,230,118,0.08)}.gift.locked{opacity:0.4}
+.prog{padding:0.4rem 2rem}.prog-track{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;display:flex}
+.prog-fill{height:100%;transition:width 0.6s cubic-bezier(0.22,1,0.36,1)}.p1{background:var(--phase1)}.p2{background:var(--phase2)}.p3{background:var(--phase3)}
+.hero{padding:0.8rem 2rem}
+.hero-card{background:linear-gradient(135deg,rgba(0,240,255,0.08),rgba(123,97,255,0.08));border:1px solid rgba(0,240,255,0.2);border-radius:14px;padding:1.3rem 1.4rem;position:relative;overflow:hidden}
+.hero-badge{position:absolute;top:0.7rem;right:1rem;font-family:'Syne',sans-serif;font-weight:800;font-size:0.55rem;letter-spacing:3px;color:var(--accent);background:rgba(0,240,255,0.1);padding:0.2rem 0.6rem;border-radius:20px}
+.hero-phase{font-size:0.5rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:0.15rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;padding-right:5rem}
+.hero-dur{color:var(--text-dim);font-size:0.6rem;margin-top:0.3rem}
+.hero-link{display:inline-block;margin-top:0.6rem;color:var(--accent);text-decoration:none;font-size:0.7rem;border:1px solid var(--accent);padding:0.4rem 1rem;border-radius:8px;transition:all 0.3s}.hero-link:hover{background:var(--accent);color:var(--bg)}
+.hero-extra{margin-top:0.6rem;display:flex;flex-direction:column;gap:0.35rem}
+.hero-extra-item{display:flex;align-items:center;gap:0.5rem;background:rgba(123,97,255,0.06);border:1px solid rgba(123,97,255,0.15);border-radius:8px;padding:0.4rem 0.7rem;transition:border-color 0.3s}.hero-extra-item:hover{border-color:var(--accent2)}
+.hero-extra-item a{color:var(--accent2);font-size:0.65rem;text-decoration:none;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-ck{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;font-size:0.45rem;transition:all 0.3s}.mini-ck:hover{border-color:var(--done)}.mini-ck.on{background:var(--done);border-color:var(--done);color:var(--bg)}
+.showcase{padding:1rem 2rem}
+.showcase-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:0.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.showcase-grid{display:flex;flex-direction:column;gap:0.8rem}
+.project-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.3rem;transition:border-color 0.3s;position:relative}.project-card:hover{border-color:var(--accent)}.project-card.has-link{border-color:var(--done)}
+.project-card.has-link::after{content:'\2713 SHIPPED';position:absolute;top:0.8rem;right:1rem;font-family:'Syne',sans-serif;font-weight:800;font-size:0.5rem;letter-spacing:2px;color:var(--done);background:rgba(0,230,118,0.1);padding:0.2rem 0.6rem;border-radius:12px}
+.pc-phase{font-size:0.5rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:0.3rem}.pc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.2rem}
+.pc-desc{font-size:0.65rem;color:var(--text-dim);line-height:1.5;margin-bottom:0.7rem}
+.pc-input-row{display:flex;gap:0.4rem;align-items:center}
+.pc-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.7rem;color:var(--text);font-family:'Space Mono',monospace;font-size:0.65rem;outline:none;transition:border-color 0.3s}.pc-input:focus{border-color:var(--accent)}.pc-input::placeholder{color:var(--text-dim)}
+.pc-save{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:0.5rem 0.8rem;font-family:'Space Mono',monospace;font-size:0.6rem;cursor:pointer;transition:opacity 0.3s;white-space:nowrap}.pc-save:hover{opacity:0.85}
+.pc-saved-link{display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem}.pc-saved-link a{color:var(--done);font-size:0.65rem;text-decoration:none;word-break:break-all}.pc-saved-link a:hover{text-decoration:underline}
+.pc-remove{color:#884444;font-size:0.6rem;cursor:pointer;background:none;border:none;font-family:'Space Mono',monospace}.pc-remove:hover{color:#ff4444}
+.filters{padding:0.8rem 2rem 0.4rem;display:flex;gap:0.4rem;flex-wrap:wrap}
+.fbtn{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:0.3rem 0.8rem;border-radius:20px;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;transition:all 0.3s}.fbtn:hover,.fbtn.on{color:var(--text);border-color:var(--accent)}.fbtn.on{background:rgba(0,240,255,0.1)}
+.phase-sec{padding:0.4rem 2rem;animation:fadeUp 0.4s ease both}.phase-sec:nth-child(2){animation-delay:0.06s}.phase-sec:nth-child(3){animation-delay:0.12s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ph-hdr{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.5rem;cursor:pointer;padding:0.3rem 0}
+.ph-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}.ph-dot.p1{background:var(--phase1);box-shadow:0 0 10px rgba(0,240,255,0.15)}.ph-dot.p2{background:var(--phase2);box-shadow:0 0 10px rgba(123,97,255,0.15)}.ph-dot.p3{background:var(--phase3);box-shadow:0 0 10px rgba(255,107,157,0.15)}
+.ph-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}.ph-cnt{font-size:0.55rem;color:var(--text-dim);margin-left:auto;letter-spacing:1px}
+.ph-tog{color:var(--text-dim);font-size:0.65rem;transition:transform 0.3s;margin-left:0.2rem}.ph-tog.collapsed{transform:rotate(-90deg)}
+.days{display:flex;flex-direction:column;gap:0.35rem;transition:max-height 0.4s ease,opacity 0.3s}.days.collapsed{max-height:0!important;opacity:0;overflow:hidden}
+.di{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:0.7rem;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0.55rem 0.9rem;transition:all 0.3s;cursor:pointer}.di:hover{border-color:var(--accent);transform:translateX(3px)}
+.di.done{opacity:0.4}.di.done .dt{text-decoration:line-through}.di.today{border-color:var(--accent);background:rgba(0,240,255,0.04)}
+.ck{width:17px;height:17px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s;cursor:pointer;font-size:0.5rem}.ck:hover{border-color:var(--done)}.ck.on{background:var(--done);border-color:var(--done);color:var(--bg)}
+.d-info{min-width:0}.dt{font-size:0.7rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm{font-size:0.55rem;color:var(--text-dim);margin-top:0.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.d-arrow{font-size:0.6rem;color:var(--accent);opacity:0;transition:opacity 0.3s;text-decoration:none;padding:0.15rem}.di:hover .d-arrow{opacity:1}
+.streak{padding:1rem 2rem}.streak-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;margin-bottom:0.5rem}
+.streak-grid{display:flex;gap:3px;flex-wrap:wrap}
+.sd{width:11px;height:11px;border-radius:2px;background:var(--surface2);transition:all 0.3s;position:relative}.sd.done{background:var(--done)}.sd.today{border:1px solid var(--accent)}.sd.future{background:var(--surface)}
+.sd:hover::after{content:attr(data-tip);position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.25rem 0.4rem;border-radius:4px;font-size:0.5rem;white-space:nowrap;z-index:10;pointer-events:none}
+.reset-wrap{text-align:center;padding:0.6rem 0 2rem}.reset-btn{background:transparent;border:1px solid #3a2020;color:#884444;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;font-size:0.55rem;transition:all 0.3s}.reset-btn:hover{border-color:#ff4444;color:#ff4444}
+/* CELEBRATIONS */
+.cele-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.88);opacity:0;pointer-events:none;transition:opacity 0.4s;padding:1rem;overflow-y:auto}
+.cele-overlay.show{opacity:1;pointer-events:auto}
+.cele-box{text-align:center;animation:popIn 0.5s cubic-bezier(0.16,1,0.3,1) both;max-width:520px;width:100%;padding:1.5rem}
+@keyframes popIn{0%{opacity:0;transform:scale(0.5) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.cele-emoji{font-size:3.5rem;animation:bounce 0.6s ease infinite alternate}@keyframes bounce{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
+.cele-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;margin:0.4rem 0;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cele-sub{color:var(--text-dim);font-size:0.7rem;line-height:1.7;margin-bottom:0.8rem}.cele-sub strong{color:var(--text);font-weight:700}
+.cele-skills{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.8rem 1rem;margin:0.8rem 0;text-align:left}
+.cele-skills-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;color:var(--accent);margin-bottom:0.4rem}
+.cele-skill-item{font-size:0.65rem;color:var(--text-dim);padding:0.2rem 0;line-height:1.5}.cele-skill-item span{color:var(--done)}
+.cele-btn{background:var(--accent2);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.3rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;cursor:pointer;transition:opacity 0.3s}.cele-btn:hover{opacity:0.85}
+.cele-game-btn{background:linear-gradient(135deg,var(--accent),var(--accent3));color:var(--bg);border:none;border-radius:10px;padding:0.65rem 1.6rem;font-family:'Syne',sans-serif;font-weight:800;font-size:0.8rem;cursor:pointer;margin-top:0.5rem;animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,240,255,0.4)}50%{box-shadow:0 0 0 12px rgba(0,240,255,0)}}
+canvas#confetti{position:fixed;inset:0;z-index:10000;pointer-events:none}
+.game-modal{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center}.game-modal.show{display:flex}
+.game-wrap{background:var(--surface);border:2px solid var(--accent);border-radius:16px;padding:1.5rem;max-width:420px;width:90%;text-align:center}
+.game-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent);margin-bottom:0.5rem}
+.game-canvas{width:100%;aspect-ratio:1;background:var(--bg);border-radius:8px;border:1px solid var(--border);display:block;cursor:pointer}
+.game-score{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--accent3);margin:0.5rem 0}
+.game-close{background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:8px;padding:0.4rem 1rem;font-family:'Space Mono',monospace;font-size:0.6rem;cursor:pointer;margin-top:0.5rem}.game-close:hover{border-color:var(--accent);color:var(--text)}
+/* AUTH MODAL */
+.auth-modal{position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center}.auth-modal.show{display:flex}
+.auth-box{background:var(--surface);border:1px solid var(--accent2);border-radius:14px;padding:1.5rem;max-width:350px;width:90%;text-align:center}
+.auth-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--accent2);margin-bottom:0.5rem}
+.auth-box p{font-size:0.65rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5}
+.auth-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.5rem;color:var(--text);font-family:'Space Mono',monospace;font-size:0.7rem;outline:none;text-align:center;margin-bottom:0.5rem}
+.auth-input:focus{border-color:var(--accent2)}
+.auth-submit{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:0.5rem 1.2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.7rem;cursor:pointer;width:100%}.auth-submit:hover{opacity:0.85}
+.auth-err{color:var(--accent3);font-size:0.6rem;margin-top:0.3rem;min-height:1rem}
+.auth-cancel{background:none;border:none;color:var(--text-dim);font-size:0.6rem;cursor:pointer;margin-top:0.5rem;font-family:'Space Mono',monospace}.auth-cancel:hover{color:var(--text)}
+@media(max-width:600px){.greeting h1{font-size:1.3rem}.stats-bar{grid-template-columns:1fr 1fr}.tl-stats{gap:0.6rem}.pace-chips{gap:0.5rem}.hero-title{font-size:0.95rem;padding-right:3.5rem}.pchip{min-width:60px}.pc-input-row{flex-direction:column}.pc-save{width:100%}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="cele-overlay" id="celeOverlay"><div class="cele-box" id="celeBox" onclick="event.stopPropagation()"></div></div>
+<div class="game-modal" id="gameModal"><div class="game-wrap"><div class="game-title">\u{1F3AE} Neural Net Catcher</div><canvas class="game-canvas" id="gameCanvas" width="380" height="380"></canvas><div class="game-score" id="gameScore">Score: 0</div><button class="game-close" onclick="closeGame()">Close Game</button></div></div>
+<div class="auth-modal" id="authModal"><div class="auth-box"><h2 id="authTitle">\u{1F512} Set Password</h2><p id="authDesc">Set a password to protect your tracker. Only you can mark sessions and save projects.</p><input class="auth-input" id="authInput" type="password" placeholder="Enter password"><button class="auth-submit" id="authSubmit" onclick="authAction()">Set Password</button><div class="auth-err" id="authErr"></div><button class="auth-cancel" onclick="closeAuth()">Cancel</button></div></div>
+<div class="w">
+  <div class="greeting" id="greeting"></div>
+  <div class="lock-banner" id="lockBanner">\u{1F512} View Only \u2014 This tracker belongs to Asad. You're viewing his progress.</div>
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="tl-section" id="tlSection"></div>
+  <div class="pace-section" id="paceSection"></div>
+  <div class="prog"><div class="prog-track" id="progTrack"></div></div>
+  <div class="hero" id="heroSection"></div>
+  <div class="showcase" id="showcase"></div>
+  <div class="filters" id="filters"></div>
+  <div id="phases"></div>
+  <div class="streak"><div class="streak-title">Streak</div><div class="streak-grid" id="streakGrid"></div></div>
+  <div class="reset-wrap"><button class="reset-btn" onclick="resetAll()">Reset All Progress</button></div>
+</div>
+<script>
+const SD='2026-04-03',SK='genai-v4',PK='genai-pace-v4',CK='genai-col-v4',LK='genai-links-v4',AK='genai-auth-v4';
+const TOTAL=80;
+
+// === AUTH SYSTEM ===
+function hashPw(pw){let h=0;for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0}return'h'+h}
+function isOwner(){const a=localStorage.getItem(AK);return!!a}
+function isLocked(){return localStorage.getItem(AK)&&!sessionStorage.getItem('unlocked')}
+function needsSetup(){return!localStorage.getItem(AK)}
+let pendingAction=null;
+function requireAuth(fn){
+  if(needsSetup()){pendingAction=fn;document.getElementById('authTitle').textContent='\u{1F512} Set Password';document.getElementById('authDesc').textContent='Set a password so only you can edit this tracker. Visitors will see your progress but can\u2019t change anything.';document.getElementById('authSubmit').textContent='Set Password';document.getElementById('authModal').classList.add('show');return}
+  if(isLocked()){pendingAction=fn;document.getElementById('authTitle').textContent='\u{1F513} Enter Password';document.getElementById('authDesc').textContent='Enter your password to make changes.';document.getElementById('authSubmit').textContent='Unlock';document.getElementById('authModal').classList.add('show');return}
+  fn();
+}
+function authAction(){
+  const pw=document.getElementById('authInput').value;if(!pw){document.getElementById('authErr').textContent='Enter a password';return}
+  if(needsSetup()){localStorage.setItem(AK,hashPw(pw));sessionStorage.setItem('unlocked','1');closeAuth();if(pendingAction){pendingAction();pendingAction=null}render();return}
+  if(hashPw(pw)===localStorage.getItem(AK)){sessionStorage.setItem('unlocked','1');closeAuth();if(pendingAction){pendingAction();pendingAction=null}render();return}
+  document.getElementById('authErr').textContent='Wrong password';
+}
+function closeAuth(){document.getElementById('authModal').classList.remove('show');document.getElementById('authInput').value='';document.getElementById('authErr').textContent='';pendingAction=null}
+document.getElementById('authInput').addEventListener('keydown',e=>{if(e.key==='Enter')authAction()});
+
+const skillMap={
+1:'You understand derivatives & chain rule \u2014 the math behind all neural nets',2:'You can build an autograd engine from scratch',3:'You can implement a basic neural network with no frameworks',
+4:'You understand bigram language models and probability tables',5:'You can train a character-level model and generate text',6:'You can build a multi-layer perceptron from scratch',
+7:'You understand embeddings, hidden layers, and loss functions',8:'You know why BatchNorm stabilizes training',9:'You can debug activations and gradients in deep networks',
+10:'You understand transformer architecture visually',11:'You deeply understand Query, Key, Value and multi-head attention',12:'You know how WaveNet dilated convolutions work',
+13:'You can manually backpropagate through complex operations',14:'You have ninja-level understanding of gradient flow',15:'You understand the Attention Is All You Need architecture',
+16:'You can code self-attention from scratch in PyTorch',17:'You can build multi-head attention + feed-forward layers',18:'You can train a GPT model and generate text',
+19:'You understand the original Transformer paper deeply',20:'You can build a BPE tokenizer from scratch',21:'\u{1F3AF} You can build & push a transformer to GitHub!',
+22:'You understand prompt engineering principles',23:'You can craft effective system prompts and few-shot examples',24:'You can build multi-step LLM systems',25:'You understand chains, routing, and LLM orchestration',
+26:'You can build LangChain apps with prompts, chains & memory',27:'You understand retrieval chains and document loaders',28:'You can build complete LLM applications with LangChain',
+29:'You understand fine-tuning: LoRA, data prep, training',30:'You can prepare datasets and configure training runs',31:'You can fine-tune an LLM and evaluate performance',
+32:'You can use HuggingFace Transformers pipelines',33:'You understand HF fine-tuning workflows',34:'You can share models on HuggingFace Hub',
+35:'You can load and process datasets with HF Datasets',36:'You understand tokenization strategies',37:'You can tackle NER, classification, QA tasks',
+38:'You can build demos with Gradio and deploy models',39:'You can fine-tune LLMs with QLoRA, PEFT',40:'You understand LLM architecture evolution',
+41:'You can run QLoRA fine-tuning in Colab',42:'You understand adapter methods and PEFT',43:'You can quantize models for deployment',
+44:'You can evaluate LLMs with benchmarks',45:'You understand inference optimization',
+46:'\u{1F3AF} You can set up a fine-tuning pipeline',47:'\u{1F3AF} You can train domain-specific models',48:'\u{1F3AF} You can push models to HF Hub',49:'\u{1F3AF} You can write model cards',
+50:'You understand vector databases and similarity search',51:'You can build semantic search applications',
+52:'You understand knowledge graphs for RAG with Neo4j',53:'You can write Cypher queries and build graph-based QA systems',54:'You can build agentic knowledge graphs with Google ADK',
+55:'You understand agentic RAG with LlamaIndex',56:'You can build query engines and retrieval agents',
+57:'You can build AI agents from scratch with LangGraph',58:'You understand agent state machines and tool calling',59:'You can build production agents with LangGraph',
+60:'You understand function calling and tool-use patterns',61:'You can build agents that call APIs',62:'You understand multi-agent orchestration with crewAI',63:'You can build teams of AI agents',
+64:'You understand the Think \u2192 Act \u2192 Observe loop',65:'You can build and integrate custom tools',66:'You can build agents with smolagents',67:'You can build agents with LlamaIndex',
+68:'You can build agents with LangGraph',69:'You can apply agents to real-world cases',70:'You understand MCP fundamentals',71:'You can build MCP servers',
+72:'You can build RAG pipelines with LangChain',73:'You can build RAG with LlamaIndex',74:'You understand RAG best practices',
+75:'\u{1F3AF} You can architect a multi-agent RAG system',76:'\u{1F3AF} You can build document ingestion pipelines',77:'\u{1F3AF} You can implement retrieval + reranking',
+78:'\u{1F3AF} You can build citation extraction agents',79:'\u{1F3AF} You can build critique agents',80:'\u{1F3AF} You can deploy production AI systems on AWS!'
+};
+
+const phaseSkills={
+1:{title:'Phase 1 Complete \u2014 Transformer Foundations',skills:['Build neural networks from scratch in PyTorch','Implement self-attention & multi-head attention','Train a GPT model and generate text','Build a BPE tokenizer from scratch'],build:['A custom text generator trained on any corpus','A sentiment classifier using your own transformer','A code completion model for a specific language']},
+2:{title:'Phase 2 Complete \u2014 LLM & GenAI Core',skills:['Fine-tune any open-source LLM with QLoRA/PEFT','Build LLM applications with LangChain','Deploy models to HuggingFace Hub','Evaluate and quantize models for production'],build:['A domain-specific chatbot for ArtemisAI clients','A social media sentiment API powered by your model','An automated content moderation system']},
+3:{title:'Phase 3 Complete \u2014 RAG, Agents & MCP',skills:['Build agentic RAG systems (vector, graph, hybrid)','Create multi-agent workflows with crewAI/LangGraph','Build Graph RAG with Neo4j knowledge graphs','Connect agents to tools via MCP, deploy on AWS'],build:['A research paper assistant for PhD supervisors','An automated competitor analysis agent for ArtemisAI','A multi-agent customer support system','A knowledge graph-powered legal research tool']},
+};
+
+const C=[
+{p:1,d:1,t:'Micrograd \u2014 Backprop (1/3)',l:'https://www.youtube.com/watch?v=VMj-3S1tku0',s:'Karpathy',dur:'~1hr'},
+{p:1,d:2,t:'Micrograd \u2014 Autograd (2/3)',l:'https://www.youtube.com/watch?v=VMj-3S1tku0&t=3600',s:'Karpathy',dur:'~1hr'},
+{p:1,d:3,t:'Micrograd \u2014 Neural net (3/3)',l:'https://www.youtube.com/watch?v=VMj-3S1tku0&t=6000',s:'Karpathy',dur:'~1hr'},
+{p:1,d:4,t:'Makemore 1 \u2014 Bigram (1/2)',l:'https://www.youtube.com/watch?v=PaCmpygFfXo',s:'Karpathy',dur:'~1hr'},
+{p:1,d:5,t:'Makemore 1 \u2014 Finish (2/2)',l:'https://www.youtube.com/watch?v=PaCmpygFfXo&t=3000',s:'Karpathy',dur:'~1hr'},
+{p:1,d:6,t:'Makemore 2 \u2014 MLP (1/2)',l:'https://www.youtube.com/watch?v=TCH_1BHY58I',s:'Karpathy',dur:'~1hr'},
+{p:1,d:7,t:'Makemore 2 \u2014 MLP (2/2)',l:'https://www.youtube.com/watch?v=TCH_1BHY58I&t=3600',s:'Karpathy',dur:'~1hr'},
+{p:1,d:8,t:'Makemore 3 \u2014 BatchNorm (1/2)',l:'https://www.youtube.com/watch?v=P6sfmUTpUmc',s:'Karpathy',dur:'~1hr'},
+{p:1,d:9,t:'Makemore 3 \u2014 Finish (2/2)',l:'https://www.youtube.com/watch?v=P6sfmUTpUmc&t=3600',s:'Karpathy',dur:'~1hr'},
+{p:1,d:10,t:'3B1B \u2014 Transformers visual',l:'https://www.youtube.com/watch?v=wjZofJX0v4M',s:'3Blue1Brown',dur:'26min'},
+{p:1,d:11,t:'3B1B \u2014 Attention deep dive',l:'https://www.youtube.com/watch?v=eMlx5fFNoYc',s:'3Blue1Brown',dur:'26min'},
+{p:1,d:12,t:'Makemore 4 \u2014 Wavenet',l:'https://www.youtube.com/watch?v=t3YJ5hKiMQ0',s:'Karpathy',dur:'~1hr'},
+{p:1,d:13,t:'Makemore 5 \u2014 Backprop ninja (1/2)',l:'https://www.youtube.com/watch?v=q8SA3rM6ckI',s:'Karpathy',dur:'~1hr'},
+{p:1,d:14,t:'Makemore 5 \u2014 Finish (2/2)',l:'https://www.youtube.com/watch?v=q8SA3rM6ckI&t=3600',s:'Karpathy',dur:'~1hr'},
+{p:1,d:15,t:'Build GPT \u2014 Attention (1/4)',l:'https://www.youtube.com/watch?v=kCc8FmEb1nY',s:'Karpathy',dur:'~30min'},
+{p:1,d:16,t:'Build GPT \u2014 Self-attention (2/4)',l:'https://www.youtube.com/watch?v=kCc8FmEb1nY&t=1800',s:'Karpathy',dur:'~30min'},
+{p:1,d:17,t:'Build GPT \u2014 Multi-head (3/4)',l:'https://www.youtube.com/watch?v=kCc8FmEb1nY&t=3600',s:'Karpathy',dur:'~30min'},
+{p:1,d:18,t:'Build GPT \u2014 Training (4/4)',l:'https://www.youtube.com/watch?v=kCc8FmEb1nY&t=5400',s:'Karpathy',dur:'~30min'},
+{p:1,d:19,t:'Read: Attention Is All You Need',l:'https://arxiv.org/abs/1706.03762',s:'Paper',dur:'~1hr'},
+{p:1,d:20,t:'Tokenization \u2014 Build BPE',l:'https://www.youtube.com/watch?v=zduSFxRajkE',s:'Karpathy',dur:'~1hr'},
+{p:1,d:21,t:'\u{1F3AF} PROJECT: Transformer to GitHub',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:2,d:22,t:'Prompt Engineering (1/2)',l:'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:23,t:'Prompt Engineering (2/2)',l:'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:24,t:'Building Systems ChatGPT (1/2)',l:'https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:25,t:'Building Systems ChatGPT (2/2)',l:'https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:26,t:'LangChain LLM Apps (1/3)',l:'https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:27,t:'LangChain LLM Apps (2/3)',l:'https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:28,t:'LangChain LLM Apps (3/3)',l:'https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:29,t:'Finetuning LLMs (1/3)',l:'https://www.deeplearning.ai/short-courses/finetuning-large-language-models/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:30,t:'Finetuning LLMs (2/3)',l:'https://www.deeplearning.ai/short-courses/finetuning-large-language-models/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:31,t:'Finetuning LLMs (3/3)',l:'https://www.deeplearning.ai/short-courses/finetuning-large-language-models/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:2,d:32,t:'HF LLM Course \u2014 Ch 1-2',l:'https://huggingface.co/learn/llm-course/chapter1/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:33,t:'HF LLM Course \u2014 Ch 3',l:'https://huggingface.co/learn/llm-course/chapter3/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:34,t:'HF LLM Course \u2014 Ch 4',l:'https://huggingface.co/learn/llm-course/chapter4/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:35,t:'HF LLM Course \u2014 Ch 5',l:'https://huggingface.co/learn/llm-course/chapter5/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:36,t:'HF LLM Course \u2014 Ch 6',l:'https://huggingface.co/learn/llm-course/chapter6/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:37,t:'HF LLM Course \u2014 Ch 7',l:'https://huggingface.co/learn/llm-course/chapter7/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:38,t:'HF LLM Course \u2014 Ch 8-9',l:'https://huggingface.co/learn/llm-course/chapter8/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:39,t:'HF LLM Course \u2014 Ch 11',l:'https://huggingface.co/learn/llm-course/chapter11/1',s:'HuggingFace',dur:'~1hr'},
+{p:2,d:40,t:'Mlabonne \u2014 Architecture',l:'https://github.com/mlabonne/llm-course',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:41,t:'Mlabonne \u2014 QLoRA',l:'https://github.com/mlabonne/llm-course#fine-tuning',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:42,t:'Mlabonne \u2014 PEFT',l:'https://github.com/mlabonne/llm-course#fine-tuning',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:43,t:'Mlabonne \u2014 Quantization',l:'https://github.com/mlabonne/llm-course#quantization',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:44,t:'Mlabonne \u2014 Evaluation',l:'https://github.com/mlabonne/llm-course#evaluation',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:45,t:'Mlabonne \u2014 Deployment',l:'https://github.com/mlabonne/llm-course#inference-optimization',s:'Mlabonne',dur:'~1hr'},
+{p:2,d:46,t:'\u{1F3AF} Fine-tune sentiment (1/4)',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:2,d:47,t:'\u{1F3AF} Training & eval (2/4)',l:'https://huggingface.co/docs/transformers/training',s:'Build',dur:'~1hr'},
+{p:2,d:48,t:'\u{1F3AF} Push to HF Hub (3/4)',l:'https://huggingface.co/docs/hub/repositories-getting-started',s:'Build',dur:'~1hr'},
+{p:2,d:49,t:'\u{1F3AF} README & card (4/4)',l:'https://huggingface.co/docs/hub/model-cards',s:'Build',dur:'~1hr'},
+// PHASE 3 — now includes Graph RAG (days 52-54)
+{p:3,d:50,t:'Vector Databases (1/2)',l:'https://www.deeplearning.ai/short-courses/building-applications-vector-databases/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:51,t:'Vector Databases (2/2)',l:'https://www.deeplearning.ai/short-courses/building-applications-vector-databases/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:52,t:'Knowledge Graphs for RAG (1/2)',l:'https://www.deeplearning.ai/short-courses/knowledge-graphs-rag/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:53,t:'Knowledge Graphs for RAG (2/2)',l:'https://www.deeplearning.ai/short-courses/knowledge-graphs-rag/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:54,t:'Agentic Knowledge Graph Construction',l:'https://learn.deeplearning.ai/courses/agentic-knowledge-graph-construction/information',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:55,t:'Agentic RAG LlamaIndex (1/2)',l:'https://www.deeplearning.ai/short-courses/building-agentic-rag-with-llamaindex/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:56,t:'Agentic RAG LlamaIndex (2/2)',l:'https://www.deeplearning.ai/short-courses/building-agentic-rag-with-llamaindex/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:57,t:'AI Agents LangGraph (1/3)',l:'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:58,t:'AI Agents LangGraph (2/3)',l:'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:59,t:'AI Agents LangGraph (3/3)',l:'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:60,t:'Functions & Agents (1/2)',l:'https://www.deeplearning.ai/short-courses/functions-tools-agents-langchain/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:61,t:'Functions & Agents (2/2)',l:'https://www.deeplearning.ai/short-courses/functions-tools-agents-langchain/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:62,t:'Multi-Agent crewAI (1/2)',l:'https://www.deeplearning.ai/short-courses/multi-ai-agent-systems-with-crewai/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:63,t:'Multi-Agent crewAI (2/2)',l:'https://www.deeplearning.ai/short-courses/multi-ai-agent-systems-with-crewai/',s:'DeepLearning.AI',dur:'~1hr'},
+{p:3,d:64,t:'HF Agents \u2014 Fundamentals',l:'https://huggingface.co/learn/agents-course/en/unit1/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:65,t:'HF Agents \u2014 Tools',l:'https://huggingface.co/learn/agents-course/en/unit1/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:66,t:'HF Agents \u2014 smolagents',l:'https://huggingface.co/learn/agents-course/en/unit2/smolagents/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:67,t:'HF Agents \u2014 LlamaIndex',l:'https://huggingface.co/learn/agents-course/en/unit2/llamaindex/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:68,t:'HF Agents \u2014 LangGraph',l:'https://huggingface.co/learn/agents-course/en/unit2/langgraph/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:69,t:'HF Agents \u2014 Use cases',l:'https://huggingface.co/learn/agents-course/en/unit3/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:70,t:'HF MCP \u2014 Fundamentals',l:'https://huggingface.co/learn/mcp-course/unit1/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:71,t:'HF MCP \u2014 Building servers',l:'https://huggingface.co/learn/mcp-course/unit2/introduction',s:'HuggingFace',dur:'~1hr'},
+{p:3,d:72,t:'LangChain RAG tutorial',l:'https://python.langchain.com/docs/tutorials/rag/',s:'Docs',dur:'~1hr'},
+{p:3,d:73,t:'LlamaIndex RAG pipeline',l:'https://docs.llamaindex.ai/en/stable/getting_started/starter_example/',s:'Docs',dur:'~1hr'},
+{p:3,d:74,t:'Pinecone RAG patterns',l:'https://www.pinecone.io/learn/retrieval-augmented-generation/',s:'Pinecone',dur:'~1hr'},
+{p:3,d:75,t:'\u{1F3AF} Agentic RAG arch (1/6)',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:3,d:76,t:'\u{1F3AF} Paper ingestion (2/6)',l:'https://docs.llamaindex.ai',s:'Build',dur:'~1hr'},
+{p:3,d:77,t:'\u{1F3AF} Retrieval+rerank (3/6)',l:'https://www.pinecone.io/learn/',s:'Build',dur:'~1hr'},
+{p:3,d:78,t:'\u{1F3AF} Citation agent (4/6)',l:'https://python.langchain.com/docs/tutorials',s:'Build',dur:'~1hr'},
+{p:3,d:79,t:'\u{1F3AF} Critique agent (5/6)',l:'https://python.langchain.com/docs/tutorials',s:'Build',dur:'~1hr'},
+{p:3,d:80,t:'\u{1F3AF} Deploy AWS (6/6)',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+];
+const PI={1:{n:'Phase 1 \u2014 Transformer Foundations',i:'\u{1F9E0}'},2:{n:'Phase 2 \u2014 LLM & GenAI Core',i:'\u{1F525}'},3:{n:'Phase 3 \u2014 RAG, Agents & MCP',i:'\u{1F916}'}};
+const projects=[
+  {id:'p1',phase:1,name:'Transformer from Scratch',desc:'GPT-style transformer in PyTorch. Tokenizer, self-attention, training loop. Push to GitHub.',placeholder:'https://github.com/asad-ikram/transformer-from-scratch'},
+  {id:'p2',phase:2,name:'Social Media Sentiment Fine-tune',desc:'Fine-tune Mistral/Llama on sentiment data using QLoRA. Push to HuggingFace Hub.',placeholder:'https://huggingface.co/asad-ikram/sentiment-model'},
+  {id:'p3',phase:3,name:'Agentic RAG Paper Assistant',desc:'Multi-agent RAG (vector + graph) over comp. social science papers. Deployed on AWS.',placeholder:'https://github.com/asad-ikram/agentic-rag-papers'},
+];
+
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function dayNum(){return Math.floor((new Date()-new Date(SD+'T00:00:00'))/864e5)+1}
+function fmt(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
+function getPace(){return ld(PK,1)}
+function setPace(v){requireAuth(()=>{sv(PK,v);render()})}
+let af='all',cs=ld(CK,{});
+function getGreeting(){const h=new Date().getHours();if(h<5)return'Burning the midnight oil';if(h<12)return'Rise and grind';if(h<17)return'Let\u2019s get it';if(h<21)return'Evening mode activated';return'Late night hustle'}
+function prj(){const pr=ld(SK,{}),pace=getPace(),rem=C.filter(c=>!pr[c.d]).length,dn=Math.ceil(rem/pace),ed=new Date();ed.setDate(ed.getDate()+dn);return{rem,dn,ed,pace}}
+
+// SOUND
+const AC=typeof AudioContext!=='undefined'?new AudioContext():null;
+function noise(dur,vol){if(!AC)return;const buf=AC.createBuffer(1,AC.sampleRate*dur,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*vol;const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();s.buffer=buf;f.type='bandpass';f.frequency.value=3000;f.Q.value=0.5;s.connect(f);f.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(vol,AC.currentTime);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+dur);s.start();s.stop(AC.currentTime+dur)}
+function playCheer(){if(AC)AC.resume();noise(1.2,0.15);if(!AC)return;[880,1100,1320].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.connect(g);g.connect(AC.destination);o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+i*0.05);g.gain.linearRampToValueAtTime(0.08,AC.currentTime+i*0.05+0.03);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+i*0.05+0.3);o.start(AC.currentTime+i*0.05);o.stop(AC.currentTime+i*0.05+0.3)})}
+function playFanfare(){if(AC)AC.resume();noise(1.5,0.12);if(!AC)return;[523,587,659,784,880,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=i%2?'sine':'triangle';o.connect(g);g.connect(AC.destination);o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+i*0.13);g.gain.linearRampToValueAtTime(0.15,AC.currentTime+i*0.13+0.04);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+i*0.13+0.5);o.start(AC.currentTime+i*0.13);o.stop(AC.currentTime+i*0.13+0.5)})}
+function playGrand(){if(AC)AC.resume();noise(2,0.15);if(!AC)return;[523,659,784,880,1047,1175,1319,1568].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type=i<4?'triangle':'sine';o.connect(g);g.connect(AC.destination);o.frequency.value=f;g.gain.setValueAtTime(0,AC.currentTime+i*0.1);g.gain.linearRampToValueAtTime(0.12,AC.currentTime+i*0.1+0.03);g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+i*0.1+0.7);o.start(AC.currentTime+i*0.1);o.stop(AC.currentTime+i*0.1+0.7)});setTimeout(()=>noise(1,0.08),800)}
+
+// CONFETTI
+const cCv=document.getElementById('confetti'),cCx=cCv.getContext('2d');let parts=[],cAn=null;
+function rC(){cCv.width=innerWidth;cCv.height=innerHeight}addEventListener('resize',rC);rC();
+function launchConfetti(n=80){const cols=['#00f0ff','#7b61ff','#ff6b9d','#00e676','#ffd700','#ff6b35'];for(let i=0;i<n;i++)parts.push({x:Math.random()*cCv.width,y:cCv.height+10,vx:(Math.random()-0.5)*8,vy:-(Math.random()*15+8),sz:Math.random()*6+3,c:cols[~~(Math.random()*cols.length)],r:Math.random()*360,rs:(Math.random()-0.5)*10,g:0.25,life:1,dc:Math.random()*0.01+0.005,sh:Math.random()>0.5});if(!cAn)animC()}
+function animC(){cCx.clearRect(0,0,cCv.width,cCv.height);parts=parts.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.r+=p.rs;p.life-=p.dc;if(p.life<=0)return false;cCx.save();cCx.translate(p.x,p.y);cCx.rotate(p.r*Math.PI/180);cCx.globalAlpha=p.life;cCx.fillStyle=p.c;p.sh?cCx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*0.6):(cCx.beginPath(),cCx.arc(0,0,p.sz/2,0,Math.PI*2),cCx.fill());cCx.restore();return true});parts.length?cAn=requestAnimationFrame(animC):(cCx.clearRect(0,0,cCv.width,cCv.height),cAn=null)}
+
+// CELEBRATIONS
+function showCele(h){document.getElementById('celeBox').innerHTML=h;document.getElementById('celeOverlay').classList.add('show')}
+function closeCele(){document.getElementById('celeOverlay').classList.remove('show')}
+document.getElementById('celeOverlay').onclick=e=>{if(e.target===e.currentTarget)closeCele()};
+function sessionCele(day){playCheer();launchConfetti(35);const sk=skillMap[day]||'New skill unlocked!',it=C.find(c=>c.d===day);showCele(`<div class="cele-emoji">\u{2705}</div><div class="cele-title">Session ${day} Done!</div><div class="cele-sub">${it.t}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F513} Skill Unlocked</div><div class="cele-skill-item"><span>\u2713</span> ${sk}</div></div><button class="cele-btn" onclick="closeCele()">Keep Going</button>`)}
+function phaseCele(phase){playFanfare();launchConfetti(120);const ps=phaseSkills[phase];showCele(`<div class="cele-emoji">${PI[phase].i}\u{1F389}</div><div class="cele-title">${ps.title}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F4AA} You Can Now</div>${ps.skills.map(s=>`<div class="cele-skill-item"><span>\u2713</span> ${s}</div>`).join('')}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--accent3)">\u{1F6E0}\uFE0F What You Can Build</div>${ps.build.map(b=>`<div class="cele-skill-item"><span>\u{1F680}</span> ${b}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Let's Go!</button>`);setTimeout(()=>launchConfetti(80),600);setTimeout(()=>launchConfetti(60),1200)}
+function grandCele(){playGrand();launchConfetti(200);showCele(`<div class="cele-emoji" style="font-size:4.5rem">\u{1F3C6}\u{1F451}\u{1F389}</div><div class="cele-title" style="font-size:2rem">ALL 80 SESSIONS DONE!</div><div class="cele-sub">Asad, you legend.<br>Transformers \u2192 LLMs \u2192 Fine-tuning \u2192 Graph RAG \u2192 Agents \u2192 MCP<br><strong>3 projects. 80 sessions. Zero shortcuts.</strong></div><div class="cele-skills"><div class="cele-skills-title">\u{1F31F} Your Full Stack</div><div class="cele-skill-item"><span>\u2713</span> Build transformers from scratch</div><div class="cele-skill-item"><span>\u2713</span> Fine-tune LLMs with QLoRA/PEFT</div><div class="cele-skill-item"><span>\u2713</span> Build Graph RAG with Neo4j</div><div class="cele-skill-item"><span>\u2713</span> Build multi-agent systems & deploy on AWS</div></div><button class="cele-game-btn" onclick="closeCele();openGame()">\u{1F3AE} Claim Reward: Neural Net Catcher</button><br><button class="cele-btn" onclick="closeCele()" style="margin-top:0.6rem;background:transparent;border:1px solid var(--border);color:var(--text-dim)">Close</button>`);setTimeout(()=>launchConfetti(150),700);setTimeout(()=>launchConfetti(120),1400);setTimeout(()=>launchConfetti(100),2000)}
+function giftPopup(phase){const ps=phaseSkills[phase],pr=ld(SK,{}),items=C.filter(c=>c.p===phase),dn=items.filter(c=>pr[c.d]).length,unlocked=dn>=items.length;
+if(unlocked)showCele(`<div class="cele-emoji">${PI[phase].i}\u{1F381}</div><div class="cele-title">${ps.title}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F4AA} Skills Unlocked</div>${ps.skills.map(s=>`<div class="cele-skill-item"><span>\u2713</span> ${s}</div>`).join('')}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--accent3)">\u{1F6E0}\uFE0F What You Can Build</div>${ps.build.map(b=>`<div class="cele-skill-item"><span>\u{1F680}</span> ${b}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Nice!</button>`);
+else showCele(`<div class="cele-emoji">\u{1F512}</div><div class="cele-title">${PI[phase].n}</div><div class="cele-sub">Complete ${items.length-dn} more sessions to unlock!</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--text-dim)">\u{1F381} Rewards Waiting</div>${ps.skills.map(s=>`<div class="cele-skill-item" style="opacity:0.4">\u{1F512} ${s}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Back to work</button>`)}
+
+// TOGGLE with auth
+function tog(d){requireAuth(()=>{const p=ld(SK,{});const wasOff=!p[d];if(p[d])delete p[d];else p[d]=Date.now();sv(SK,p);
+if(wasOff){const np=ld(SK,{}),tot=C.length,allDn=C.filter(c=>np[c.d]).length,item=C.find(c=>c.d===d),pIt=C.filter(c=>c.p===item.p),pDn=pIt.filter(c=>np[c.d]).length;allDn===tot?grandCele():pDn===pIt.length?phaseCele(item.p):sessionCele(d)}render()})}
+function saveLink(id){requireAuth(()=>{const v=document.getElementById('input-'+id).value.trim();if(!v)return;const l=ld(LK,{});const isNew=!l[id];l[id]=v;sv(LK,l);render();
+if(isNew){playFanfare();launchConfetti(100);const nm={p1:'Transformer from Scratch',p2:'Sentiment Fine-tune',p3:'Agentic RAG'};showCele(`<div class="cele-emoji">\u{1F680}\u{2728}</div><div class="cele-title">Project Shipped!</div><div class="cele-sub"><strong>${nm[id]}</strong> is live.<br>Real work > certificates.</div><button class="cele-btn" onclick="closeCele()">Back to it</button>`);setTimeout(()=>launchConfetti(60),500)}})}
+function setF(f){af=f;render()}
+function togC(p){cs[p]=!cs[p];sv(CK,cs);render()}
+function removeLink(id){requireAuth(()=>{const l=ld(LK,{});delete l[id];sv(LK,l);render()})}
+function resetAll(){requireAuth(()=>{if(confirm('Reset all progress?')){localStorage.removeItem(SK);localStorage.removeItem(LK);render()}})}
+
+// RENDER
+function render(){
+const pr=ld(SK,{}),td=dayNum(),tot=C.length,done=C.filter(c=>pr[c.d]).length;
+const pj=prj(),pace=getPace(),links=ld(LK,{});
+const pd=[1,2,3].map(p=>{const it=C.filter(c=>c.p===p);return{it,dn:it.filter(c=>pr[c.d]).length}});
+const streakDays=(()=>{let s=0;for(let i=td-1;i>=1;i--){if(pr[i])s++;else break}return s})();
+const viewOnly=isOwner()&&isLocked();
+const notOwner=!isOwner()&&!needsSetup();
+document.getElementById('lockBanner').classList.toggle('show',viewOnly);
+
+document.getElementById('greeting').innerHTML=`<h1><span class="name">Asad's GenAI Journey</span></h1>
+<div class="tagline">${getGreeting()} \xB7 ${tot} sessions \xB7 Transformers \u2192 LLMs \u2192 Graph RAG \u2192 Agents</div>
+<div class="motivation">${done===0?`Your GenAI journey starts now. <span>Day 1: Karpathy's Micrograd. Let's go.</span>`:done>=tot?`<span>All ${tot} sessions crushed.</span> 3 projects shipped. Your GitHub speaks for itself.`:streakDays>=3?`<span>${streakDays}-day streak \u{1F525}</span> ${pj.rem} sessions left. Done by ${fmt(pj.ed)}.`:`${done} down, ${pj.rem} to go. Finishing by <span>${fmt(pj.ed)}</span>. Keep stacking.`}</div>`;
+
+document.getElementById('statsBar').innerHTML=`<div class="stat-card"><div class="stat-label">Done</div><div class="stat-value cw">${done}/${tot}</div></div><div class="stat-card"><div class="stat-label">Phase 1</div><div class="stat-value c1">${pd[0].dn}/${pd[0].it.length}</div></div><div class="stat-card"><div class="stat-label">Phase 2</div><div class="stat-value c2">${pd[1].dn}/${pd[1].it.length}</div></div><div class="stat-card"><div class="stat-label">Phase 3</div><div class="stat-value c3">${pd[2].dn}/${pd[2].it.length}</div></div>`;
+
+const s0=new Date(SD+'T00:00:00'),tSpan=Math.max((pj.ed-s0)/864e5,1),el=Math.max((new Date()-s0)/864e5,0),pPct=Math.min((done/tot)*100,100),tPct=Math.min((el/tSpan)*100,100);
+const p1End=21/tot*100,p2End=49/tot*100;
+document.getElementById('tlSection').innerHTML=`<div class="tl-card"><div class="tl-top"><div class="tl-title">Timeline</div><div class="tl-dates"><span>${fmt(s0)}</span> \u2192 <span>${fmt(pj.ed)}</span></div></div><div class="meter"><div class="meter-fill" style="width:${pPct}%"></div><div class="meter-today" style="left:${tPct}%"></div></div><div class="meter-gifts"><div class="meter-gift ${pd[0].dn>=pd[0].it.length?'':'locked'}" style="left:${p1End}%" onclick="giftPopup(1)">\u{1F381}</div><div class="meter-gift ${pd[1].dn>=pd[1].it.length?'':'locked'}" style="left:${p2End}%" onclick="giftPopup(2)">\u{1F381}</div><div class="meter-gift ${done>=tot?'':'locked'}" style="left:99%" onclick="giftPopup(3)">\u{1F381}</div></div><div class="tl-stats"><div class="ts"><div class="ts-v cg">${done}</div><div class="ts-l">Done</div></div><div class="ts"><div class="ts-v c1">${pj.rem}</div><div class="ts-l">Left</div></div><div class="ts"><div class="ts-v c3">${pj.dn}</div><div class="ts-l">Days</div></div><div class="ts"><div class="ts-v c2">${fmt(pj.ed)}</div><div class="ts-l">Finish</div></div><div class="ts"><div class="ts-v cg">${Math.round(pPct)}%</div><div class="ts-l">Complete</div></div></div></div>`;
+
+document.getElementById('paceSection').innerHTML=`<div class="pace-card"><div class="pace-top"><div class="pace-title">\u26A1 Daily Pace</div><div class="pace-val">${pace} session${pace>1?'s':''}/day</div></div><input type="range" min="1" max="5" value="${pace}" oninput="setPace(+this.value)"><div class="pace-chips"><div class="pchip"><strong>${pj.dn}</strong><span>days left</span></div><div class="pchip"><strong>${pj.rem}hr</strong><span>total</span></div><div class="pchip"><strong>${pace}hr</strong><span>per day</span></div><div class="pchip"><strong>${fmt(pj.ed)}</strong><span>finish</span></div></div><div class="milestones"><div class="gift ${pd[0].dn>=pd[0].it.length?'unlocked':'locked'}" onclick="giftPopup(1)">\u{1F381} Phase 1</div><div class="gift ${pd[1].dn>=pd[1].it.length?'unlocked':'locked'}" onclick="giftPopup(2)">\u{1F381} Phase 2</div><div class="gift ${pd[2].dn>=pd[2].it.length?'unlocked':'locked'}" onclick="giftPopup(3)">\u{1F381} Phase 3</div><div class="gift ${done>=tot?'unlocked':'locked'}" onclick="${done>=tot?'openGame()':'giftPopup(3)'}">\u{1F3AE} Game</div></div></div>`;
+
+document.getElementById('progTrack').innerHTML=pd.map((p,i)=>`<div class="prog-fill p${i+1}" style="width:${(p.dn/tot)*100}%"></div>`).join('');
+
+const undone=C.filter(c=>!pr[c.d]),todayS=undone.slice(0,pace),hEl=document.getElementById('heroSection');
+if(todayS.length){const f=todayS[0],pi=PI[f.p];hEl.innerHTML=`<div class="hero-card"><div class="hero-badge">${pace>1?todayS.length+' TODAY':'TODAY'}</div><div class="hero-phase">${pi.i} ${pi.n}</div><div class="hero-title">Day ${f.d}: ${f.t}</div><div class="hero-dur">${f.s} \xB7 ${f.dur}</div><a href="${f.l}" target="_blank" class="hero-link">\u25B6 Start Session</a>${todayS.length>1?`<div class="hero-extra">${todayS.slice(1).map(x=>`<div class="hero-extra-item"><div class="mini-ck ${pr[x.d]?'on':''}" onclick="event.stopPropagation();tog(${x.d})">${pr[x.d]?'\u2713':''}</div><a href="${x.l}" target="_blank">Day ${x.d}: ${x.t}</a></div>`).join('')}</div>`:''}</div>`}
+else hEl.innerHTML=`<div class="hero-card"><div class="hero-badge">COMPLETE</div><div style="color:var(--text-dim);font-size:0.85rem;padding:0.3rem 0">\u{1F389} All ${tot} sessions done. Legendary, Asad.</div></div>`;
+
+document.getElementById('showcase').innerHTML=`<div class="showcase-title">\u{1F680} Project Showcase</div><div class="showcase-grid">${projects.map(pj=>{const link=links[pj.id]||'';return`<div class="project-card ${link?'has-link':''}"><div class="pc-phase c${pj.phase}">${PI[pj.phase].i} ${PI[pj.phase].n}</div><div class="pc-name">${pj.name}</div><div class="pc-desc">${pj.desc}</div><div class="pc-input-row"><input class="pc-input" id="input-${pj.id}" placeholder="${pj.placeholder}" value="${link}"><button class="pc-save" onclick="saveLink('${pj.id}')">Save Link</button></div>${link?`<div class="pc-saved-link"><a href="${link}" target="_blank">\u2713 ${link}</a><button class="pc-remove" onclick="removeLink('${pj.id}')">remove</button></div>`:''}</div>`}).join('')}</div>`;
+
+document.getElementById('filters').innerHTML=['all',1,2,3].map(f=>{const lb=f==='all'?'All':`Phase ${f}`;return`<button class="fbtn ${af===f?'on':''}" onclick="setF(${typeof f==='string'?"'"+f+"'":f})">${lb}</button>`}).join('');
+
+const phs=af==='all'?[1,2,3]:[af];
+document.getElementById('phases').innerHTML=phs.map(p=>{const pi=PI[p],items=C.filter(c=>c.p===p),dn=items.filter(c=>pr[c.d]).length,col=cs[p];
+return`<div class="phase-sec"><div class="ph-hdr" onclick="togC(${p})"><div class="ph-dot p${p}"></div><div class="ph-name">${pi.i} ${pi.n}</div><div class="ph-cnt">${dn}/${items.length}</div><div class="ph-tog ${col?'collapsed':''}">\u25BC</div></div><div class="days ${col?'collapsed':''}" style="${col?'max-height:0':'max-height:99999px'}">${items.map(it=>{const isDn=pr[it.d],isT=it.d===td;return`<div class="di ${isDn?'done':''} ${isT?'today':''}" onclick="window.open('${it.l}','_blank')"><div class="ck ${isDn?'on':''}" onclick="event.stopPropagation();tog(${it.d})">${isDn?'\u2713':''}</div><div class="d-info"><div class="dt">Day ${it.d}: ${it.t}</div><div class="dm">${it.s} \xB7 ${it.dur}</div></div><a href="${it.l}" target="_blank" class="d-arrow" onclick="event.stopPropagation()">\u2197</a></div>`}).join('')}</div></div>`}).join('');
+
+document.getElementById('streakGrid').innerHTML=C.map(c=>{const isDn=pr[c.d],isT=c.d===td,isF=c.d>td;let cls='sd';if(isDn)cls+=' done';else if(isT)cls+=' today';else if(isF)cls+=' future';return`<div class="${cls}" data-tip="Day ${c.d}: ${c.t}"></div>`}).join('');
+}
+
+// GAME
+let gameRunning=false;
+function openGame(){document.getElementById('gameModal').classList.add('show');startGame()}
+function closeGame(){document.getElementById('gameModal').classList.remove('show');gameRunning=false}
+function startGame(){const gc=document.getElementById('gameCanvas'),ctx=gc.getContext('2d'),W=gc.width,H=gc.height;let score=0;gameRunning=true;let paddle={x:W/2-30,w:60,h:10},items=[],frame=0,speed=2;const em=['\u{1F9E0}','\u{1F525}','\u{1F916}','\u26A1','\u{1F4A1}','\u{2B50}'],bad=['\u{1F4A3}','\u{1F480}'];
+gc.onmousemove=e=>{const r=gc.getBoundingClientRect();paddle.x=((e.clientX-r.left)/r.width)*W-paddle.w/2};
+gc.ontouchmove=e=>{e.preventDefault();const r=gc.getBoundingClientRect();paddle.x=((e.touches[0].clientX-r.left)/r.width)*W-paddle.w/2};
+function loop(){if(!gameRunning)return;ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(0,240,255,0.05)';for(let i=0;i<W;i+=20){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke()}for(let i=0;i<H;i+=20){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke()}
+frame++;if(frame%30===0){const b=Math.random()<0.2;items.push({x:Math.random()*(W-20),y:-20,e:b?bad[~~(Math.random()*bad.length)]:em[~~(Math.random()*em.length)],b,sp:speed+Math.random()*1.5})}if(frame%300===0)speed+=0.3;
+items=items.filter(it=>{it.y+=it.sp;ctx.font='20px serif';ctx.fillText(it.e,it.x,it.y);if(it.y>H-paddle.h-5&&it.y<H&&it.x>paddle.x-10&&it.x<paddle.x+paddle.w+10){it.b?score=Math.max(0,score-5):score++;return false}return it.y<H+30});
+const gr=ctx.createLinearGradient(paddle.x,0,paddle.x+paddle.w,0);gr.addColorStop(0,'#00f0ff');gr.addColorStop(0.5,'#7b61ff');gr.addColorStop(1,'#ff6b9d');ctx.fillStyle=gr;ctx.beginPath();ctx.roundRect(paddle.x,H-paddle.h-5,paddle.w,paddle.h,5);ctx.fill();
+ctx.fillStyle='#e8e8f0';ctx.font='bold 14px Syne,sans-serif';ctx.fillText('Score: '+score,10,25);document.getElementById('gameScore').textContent='Score: '+score;requestAnimationFrame(loop)}loop()}
+
+render();
+</script>
+</body>
+</html>
