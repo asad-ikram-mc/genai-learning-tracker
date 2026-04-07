@@ -98,7 +98,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .d-info{min-width:0}.dt{font-size:0.65rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dm{font-size:0.5rem;color:var(--text-dim);margin-top:0.03rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .d-arrow{font-size:0.55rem;color:var(--accent);opacity:0;transition:opacity 0.3s;text-decoration:none;padding:0.15rem}.di:hover .d-arrow{opacity:1}
-.d-artemis{font-size:0.55rem;color:var(--p4);opacity:0;transition:opacity 0.3s;cursor:pointer;padding:0.15rem;background:none;border:none;font-family:'Space Mono',monospace}.di:hover .d-artemis{opacity:1}.d-artemis:hover{color:var(--accent)}
+.d-artemis{font-size:0.55rem;color:var(--p4);opacity:0.5;transition:opacity 0.3s;cursor:pointer;padding:0.15rem;background:none;border:none;font-family:'Space Mono',monospace}.di:hover .d-artemis{opacity:1}.d-artemis:hover{color:var(--accent)}
 .pc-guide{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:var(--p4);border-radius:8px;padding:0.4rem 0.7rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.55rem;cursor:pointer;transition:all 0.3s;margin-top:0.5rem;display:inline-block}.pc-guide:hover{background:rgba(255,215,0,0.2);border-color:var(--p4)}
 .streak{padding:1rem 2rem}.streak-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;margin-bottom:0.4rem}
 .streak-grid{display:flex;gap:3px;flex-wrap:wrap}
@@ -363,32 +363,32 @@ const artemisMap={
 
 const projectGuides={
 p1:{title:'\u{1F525} How to Build: Fine-tune Sentiment Model',steps:[
-'\u2460 <b>Export training data</b> \u2014 Query Redshift for 2,600+ posts Rafeh labelled. Export as JSONL: {text, sentiment_label}.',
-'\u2461 <b>Prepare dataset</b> \u2014 80/10/10 split. HF Datasets library. Tokenize with XLM-RoBERTa tokenizer (max 256 tokens).',
-'\u2462 <b>Fine-tune with QLoRA</b> \u2014 Mlabonne notebook as template. rank=16, alpha=32, dropout=0.05, lr=2e-4, epochs=3.',
-'\u2463 <b>Evaluate</b> \u2014 Target Macro F1 >0.80. Compare vs DeepSeek V3 baseline. Check per-class F1.',
-'\u2464 <b>Test three-tier logic</b> \u2014 Run 500 unlabelled posts. Tier 1 (>0.85) should catch ~65%. Rest to DeepSeek Tier 2.',
-'\u2465 <b>Push to HuggingFace</b> \u2014 Model + tokenizer + model card: data source, metrics, use, limitations.',
+'\u2460 <b>Export training data</b> \u2014 Query Redshift for 2,600+ posts Rafeh labelled. Export as JSONL: {text, sentiment_label}. <i>(Uses: Day 13 HF pipelines, Day 14 Hub workflows)</i>',
+'\u2461 <b>Prepare dataset</b> \u2014 80/10/10 split. HF Datasets library. XLM-RoBERTa tokenizer, max 256 tokens. Clean with NFKC normalisation, HTML unescape, URL placeholders. <i>(Uses: Day 12 fine-tuning concepts, Day 13 Trainer API)</i>',
+'\u2462 <b>Fine-tune with QLoRA</b> \u2014 Use Day 16 Mlabonne notebook as template. Config: rank=16, alpha=32, dropout=0.05, lr=2e-4, epochs=3. Train on Colab free tier or SageMaker. <i>(Uses: Day 15-16 QLoRA + PEFT)</i>',
+'\u2463 <b>Evaluate</b> \u2014 Target Macro F1 >0.80 on test set. Compare against DeepSeek V3 baseline (your Tier 2 model). Check per-class: positive/negative/neutral F1 separately. <i>(Uses: Day 18 evaluation + benchmarks)</i>',
+'\u2464 <b>Test three-tier logic</b> \u2014 Run 500 unlabelled posts through: Tier 1 (model conf >0.85, should catch ~65%), Tier 2 (send to DeepSeek, check agreement), Tier 3 (DeepSeek solo + flag for Rafeh audit). <i>(Uses: Day 19 fine-tune vs RAG decision framework)</i>',
+'\u2465 <b>Push to HuggingFace</b> \u2014 model.push_to_hub("artemisai-sentiment"). Write model card: data source (ArtemisAI FB posts), metrics (Macro F1), intended use (Tier 1 pipeline), limitations (UK slang, sarcasm). <i>(Uses: Day 14 Hub workflows)</i>',
 ]},
 p2:{title:'\u{1F50D} How to Build: Art-E RAG Prototype',steps:[
-'\u2460 <b>Embed posts</b> \u2014 sentence-transformers on 111K captions. Pinecone index with metadata (page_id, date, engagement, sentiment).',
-'\u2461 <b>Build knowledge graph</b> \u2014 Neo4j: Page \u2192 Post \u2192 Topic nodes. Edges: posted_by, has_topic, similar_to. Import from Redshift.',
-'\u2462 <b>Hybrid retrieval router</b> \u2014 Semantic ("posts about fitness") \u2192 Pinecone. Structured ("Tuesday top post") \u2192 SQL. Relationships ("compare niches") \u2192 Neo4j.',
-'\u2463 <b>RAG pipeline</b> \u2014 query \u2192 route \u2192 retrieve \u2192 rerank \u2192 augment prompt \u2192 generate with citations.',
-'\u2464 <b>Evaluate (RAG triad)</b> \u2014 50 test queries. Context Relevance + Groundedness + Answer Relevance.',
-'\u2465 <b>Deploy</b> \u2014 Lambda + API Gateway. Test: "Why did Tuesday post go viral?", "What works for drinking meme pages?"',
+'\u2460 <b>Embed posts</b> \u2014 Use sentence-transformers (all-MiniLM-L6-v2) on 111K captions. Create Pinecone index with metadata: page_id, date, engagement, sentiment_label, topic. <i>(Uses: Day 8 embeddings, Day 23-24 RAG course)</i>',
+'\u2461 <b>Build knowledge graph</b> \u2014 Neo4j: Page nodes \u2192 Post nodes \u2192 Topic nodes. Edges: posted_by, has_topic, similar_to (cosine >0.85). Import from Redshift dim_posts + NLP labels. <i>(Uses: Day 28-29 Knowledge Graphs for RAG)</i>',
+'\u2462 <b>Hybrid retrieval router</b> \u2014 Semantic ("posts about fitness") \u2192 Pinecone. Structured ("Tuesday\'s top post") \u2192 Redshift SQL. Relationships ("compare niches") \u2192 Neo4j Cypher. <i>(Uses: Day 24 hybrid search, Day 26-27 agentic RAG)</i>',
+'\u2463 <b>RAG pipeline</b> \u2014 LlamaIndex: query \u2192 IntentClassifier \u2192 route to right retriever \u2192 rerank with Cohere \u2192 augment prompt with citations \u2192 generate. <i>(Uses: Day 25 advanced RAG, Day 31 LlamaIndex)</i>',
+'\u2464 <b>Evaluate (RAG triad)</b> \u2014 50 test queries from Knowledge Hub. Context Relevance: did we get the right posts? Groundedness: every number traceable to Redshift? Answer Relevance: does it actually answer? <i>(Uses: Day 25 RAG triad evaluation)</i>',
+'\u2465 <b>Deploy prototype</b> \u2014 Lambda + API Gateway. Test: "Why did Tuesday post go viral?", "What content works for drinking meme pages?", "Compare my engagement to last month." <i>(Uses: Day 34 deploy + evaluation)</i>',
 ]},
 p3:{title:'\u{1F916} How to Build: Art-E Agentic System',steps:[
-'\u2460 <b>Agent architecture</b> \u2014 LangGraph: QueryUnderstanding \u2192 ToolSelection \u2192 Execution \u2192 ResponseAssembly \u2192 Stream.',
-'\u2461 <b>Build 5 MCP tools</b> \u2014 query_posts() \u2192 Redshift, get_engagement() \u2192 Redshift, predict_virality() \u2192 SageMaker, search_similar() \u2192 Pinecone, explain_post() \u2192 SHAP.',
-'\u2462 <b>Model router</b> \u2014 GPT-4o-mini (60%, $0.002/q) | GPT-4 (25%, $0.03/q) | LLaMA 8B (15%, $0.001/q).',
-'\u2463 <b>Multi-agent proactive insights</b> \u2014 crewAI: Sentiment + Engagement + Virality + Audience agents \u2192 Synthesis \u2192 8AM briefing.',
-'\u2464 <b>Conversation memory</b> \u2014 DynamoDB: last 5 turns. "Last time you asked about posting times, I found Tuesday 6PM."',
-'\u2465 <b>SSE streaming + deploy</b> \u2014 API Gateway \u2192 Lambda \u2192 SSE \u2192 React UI typewriter. Citations from Redshift results.',
+'\u2460 <b>LangGraph state machine</b> \u2014 Nodes: QueryUnderstanding \u2192 ModelRouter \u2192 ToolSelector \u2192 ToolExecutor \u2192 ResponseAssembly \u2192 Stream. Conditional edges for complexity routing. <i>(Uses: Day 35-36 LangGraph agents)</i>',
+'\u2461 <b>Build 5 MCP tools</b> \u2014 query_posts(date,sort) \u2192 Redshift SQL, get_engagement(period) \u2192 Redshift, predict_virality(text) \u2192 SageMaker, search_similar(post_id) \u2192 Pinecone, explain_post(id) \u2192 SHAP. <i>(Uses: Day 37 functions/tools, Day 41-42 MCP)</i>',
+'\u2462 <b>Model router</b> \u2014 GPT-4o-mini for simple lookups (60%, ~$0.002/q). GPT-4 for complex analysis (25%, ~$0.03/q). Fine-tuned LLaMA 8B for patterns (15%, ~$0.001/q). Monthly cost at 100 pages: ~$15 with Redis caching. <i>(Uses: Day 36 conditional branching, Day 19 decision framework)</i>',
+'\u2463 <b>Multi-agent proactive insights</b> \u2014 crewAI: SentimentAgent + EngagementAgent + ViralityAgent + AudienceAgent run parallel, SynthesisAgent combines \u2192 daily 8AM briefing (Sprint 20 VD-123). <i>(Uses: Day 38 crewAI multi-agent)</i>',
+'\u2464 <b>Conversation memory</b> \u2014 DynamoDB: last 5 turns per user. "Last time you asked about posting times, I found Tuesday 6PM." Redis for session cache (1hr TTL for data, 24hr for explanations). <i>(Uses: Day 39-40 agent use cases)</i>',
+'\u2465 <b>SSE streaming + deploy</b> \u2014 API Gateway \u2192 Lambda \u2192 SSE to React. Typewriter effect. Citations: [Source: post_labels, 2026-04-01]. Suggestion pills for follow-up questions. <i>(Uses: Day 46 AWS deploy, Day 47 polish)</i>',
 ]},
 };
 
-function showArtemis(day){const a=artemisMap[day];if(!a)return;const it=C.find(c=>c.d===day);showCele(`<div class="cele-emoji">\u{1F3E2}</div><div class="cele-title" style="font-size:1.1rem">ArtemisAI Context</div><div class="cele-sub">Day ${day}: ${it.t}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--p4)">\u{1F50C} How This Helps ArtemisAI</div><div class="cele-skill-item">${a}</div></div><button class="cele-btn" onclick="closeCele()">Got it</button>`)}
+function showArtemis(day){const a=artemisMap[day];if(!a)return;const it=C.find(c=>c.d===day);const sk=skillMap[day]||'';showCele(`<div class="cele-emoji">\u{1F3E2}</div><div class="cele-title" style="font-size:1.1rem">Day ${day}: ${it.t}</div><div class="cele-sub">${it.s} \xB7 ${it.dur}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--p4)">\u{1F50C} How This Helps ArtemisAI</div><div class="cele-skill-item">${a}</div></div><div class="cele-skills"><div class="cele-skills-title">\u{1F513} Skill You'll Unlock</div><div class="cele-skill-item"><span>\u2713</span> ${sk}</div></div><a href="${it.l}" target="_blank" style="display:inline-block;margin-top:0.5rem;background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:0.5rem 1.2rem;font-family:Syne,sans-serif;font-weight:700;font-size:0.7rem;text-decoration:none;cursor:pointer">\u25B6 Go to Video</a> <button class="cele-btn" onclick="closeCele()" style="margin-left:0.5rem">Close</button>`)}
 
 function showProjectGuide(id){const g=projectGuides[id];if(!g)return;showCele(`<div class="cele-emoji">\u{1F6E0}\uFE0F</div><div class="cele-title" style="font-size:1.1rem">${g.title}</div><div class="cele-skills"><div class="cele-skills-title">Implementation Steps</div>${g.steps.map(s=>`<div class="cele-skill-item">${s}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Let's Build</button>`)}
 
@@ -466,7 +466,7 @@ document.getElementById('filters').innerHTML=['all',1,2,3,4].map(f=>{const lb=f=
 
 const phs=af==='all'?[1,2,3,4]:[af];
 document.getElementById('phases').innerHTML=phs.map(p=>{const pi=PI[p],items=C.filter(c=>c.p===p),dn=items.filter(c=>pr[c.d]).length,col=cs[p];
-return`<div class="phase-sec"><div class="ph-hdr" onclick="togC(${p})"><div class="ph-dot p${p}"></div><div class="ph-name">${pi.i} ${pi.n}</div><div class="ph-cnt">${dn}/${items.length}</div><div class="ph-tog ${col?'collapsed':''}">\u25BC</div></div><div class="days ${col?'collapsed':''}" style="${col?'max-height:0':'max-height:99999px'}">${items.map(it=>{const isDn=pr[it.d],isT=it.d===td;return`<div class="di ${isDn?'done':''} ${isT?'today':''}" onclick="window.open('${it.l}','_blank')"><div class="ck ${isDn?'on':''}" onclick="event.stopPropagation();tog(${it.d})">${isDn?'\u2713':''}</div><div class="d-info"><div class="dt">Day ${it.d}: ${it.t}</div><div class="dm">${it.s} \xB7 ${it.dur}</div></div><button class="d-artemis" onclick="event.stopPropagation();showArtemis(${it.d})" title="ArtemisAI context">\u{1F3E2}</button><a href="${it.l}" target="_blank" class="d-arrow" onclick="event.stopPropagation()">\u2197</a></div>`}).join('')}</div></div>`}).join('');
+return`<div class="phase-sec"><div class="ph-hdr" onclick="togC(${p})"><div class="ph-dot p${p}"></div><div class="ph-name">${pi.i} ${pi.n}</div><div class="ph-cnt">${dn}/${items.length}</div><div class="ph-tog ${col?'collapsed':''}">\u25BC</div></div><div class="days ${col?'collapsed':''}" style="${col?'max-height:0':'max-height:99999px'}">${items.map(it=>{const isDn=pr[it.d],isT=it.d===td;return`<div class="di ${isDn?'done':''} ${isT?'today':''}" onclick="showArtemis(${it.d})"><div class="ck ${isDn?'on':''}" onclick="event.stopPropagation();tog(${it.d})">${isDn?'\u2713':''}</div><div class="d-info"><div class="dt">Day ${it.d}: ${it.t}</div><div class="dm">${it.s} \xB7 ${it.dur}</div></div><button class="d-artemis" onclick="event.stopPropagation();showArtemis(${it.d})" title="Show details">\u{1F4CB}</button><a href="${it.l}" target="_blank" class="d-arrow" onclick="event.stopPropagation()" title="Go to video">\u25B6</a></div>`}).join('')}</div></div>`}).join('');
 
 document.getElementById('streakGrid').innerHTML=C.map(c=>{const isDn=pr[c.d],isT=c.d===td,isF=c.d>td;let cls='sd';if(isDn)cls+=' done';else if(isT)cls+=' today';else if(isF)cls+=' future';return`<div class="${cls}" data-tip="Day ${c.d}: ${c.t}"></div>`}).join('');
 }
