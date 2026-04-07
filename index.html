@@ -140,7 +140,7 @@ canvas#confetti{position:fixed;inset:0;z-index:10000;pointer-events:none}
 <canvas id="confetti"></canvas>
 <div class="cele-overlay" id="celeOverlay"><div class="cele-box" id="celeBox" onclick="event.stopPropagation()"></div></div>
 <div class="game-modal" id="gameModal"><div class="game-wrap"><div class="game-title">\u{1F3AE} Neural Net Catcher</div><canvas class="game-canvas" id="gameCanvas" width="380" height="380"></canvas><div class="game-score" id="gameScore">Score: 0</div><button class="game-close" onclick="closeGame()">Close Game</button></div></div>
-<div class="auth-modal" id="authModal"><div class="auth-box"><h2 id="authTitle">\u{1F512} Set Password</h2><p id="authDesc">Set a password so only you can edit. Visitors see progress but can't change anything.</p><input class="auth-input" id="authInput" type="password" placeholder="Enter password"><button class="auth-submit" id="authSubmit" onclick="authAction()">Set Password</button><div class="auth-err" id="authErr"></div><button class="auth-cancel" onclick="closeAuth()">Cancel</button></div></div>
+<div class="auth-modal" id="authModal"><div class="auth-box"><h2 id="authTitle">\u{1F513} Enter Password</h2><p id="authDesc">Only Asad can make changes. Enter password to unlock editing.</p><input class="auth-input" id="authInput" type="password" placeholder="Enter password"><button class="auth-submit" id="authSubmit" onclick="authAction()">Unlock</button><div class="auth-err" id="authErr"></div><button class="auth-cancel" onclick="closeAuth()">Cancel</button></div></div>
 <div class="w">
   <div class="greeting" id="greeting"></div>
   <div class="lock-banner" id="lockBanner">\u{1F512} View Only \u2014 This tracker belongs to Asad.</div>
@@ -159,21 +159,20 @@ canvas#confetti{position:fixed;inset:0;z-index:10000;pointer-events:none}
 const SD='2026-04-07',SK='genai-v5',PK='genai-pace-v5',CK='genai-col-v5',LK='genai-links-v5',AK='genai-auth-v5';
 const TOT=47;
 
-// AUTH
+// AUTH — Password is baked in. Change OWNER_HASH to use a different password.
+// Current password: asad2026 — to change, run in browser console: 
+// (function(p){let h=0;for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0}console.log('h'+h)})('YOUR_NEW_PASSWORD')
+const OWNER_HASH='h-891464105';
 function hashPw(p){let h=0;for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0}return'h'+h}
-function isOwner(){return!!localStorage.getItem(AK)}
-function isLocked(){return localStorage.getItem(AK)&&!sessionStorage.getItem('unlocked')}
-function needsSetup(){return!localStorage.getItem(AK)}
+function isUnlocked(){return sessionStorage.getItem('unlocked')==='1'}
 let pendingAction=null;
 function requireAuth(fn){
-  if(needsSetup()){pendingAction=fn;document.getElementById('authTitle').textContent='\u{1F512} Set Password';document.getElementById('authDesc').textContent='Set a password so only you can edit. Visitors see your progress but can\u2019t change anything.';document.getElementById('authSubmit').textContent='Set Password';document.getElementById('authModal').classList.add('show');return}
-  if(isLocked()){pendingAction=fn;document.getElementById('authTitle').textContent='\u{1F513} Enter Password';document.getElementById('authDesc').textContent='Enter your password to make changes.';document.getElementById('authSubmit').textContent='Unlock';document.getElementById('authModal').classList.add('show');return}
-  fn();
+  if(isUnlocked()){fn();return}
+  pendingAction=fn;document.getElementById('authTitle').textContent='\u{1F513} Enter Password';document.getElementById('authDesc').textContent='Only Asad can make changes. Enter password to unlock editing.';document.getElementById('authSubmit').textContent='Unlock';document.getElementById('authModal').classList.add('show');
 }
 function authAction(){
   const pw=document.getElementById('authInput').value;if(!pw){document.getElementById('authErr').textContent='Enter a password';return}
-  if(needsSetup()){localStorage.setItem(AK,hashPw(pw));sessionStorage.setItem('unlocked','1');const fn=pendingAction;pendingAction=null;closeAuth();if(fn)fn();render();return}
-  if(hashPw(pw)===localStorage.getItem(AK)){sessionStorage.setItem('unlocked','1');const fn=pendingAction;pendingAction=null;closeAuth();if(fn)fn();render();return}
+  if(hashPw(pw)===OWNER_HASH){sessionStorage.setItem('unlocked','1');const fn=pendingAction;pendingAction=null;closeAuth();if(fn)fn();render();return}
   document.getElementById('authErr').textContent='Wrong password';
 }
 function closeAuth(){document.getElementById('authModal').classList.remove('show');document.getElementById('authInput').value='';document.getElementById('authErr').textContent='';pendingAction=null}
@@ -440,7 +439,7 @@ const pr=ld(SK,{}),td=dayNum(),tot=TOT,done=C.filter(c=>pr[c.d]).length;
 const pj=prj(),pace=getPace(),links=ld(LK,{});
 const pd=[1,2,3,4].map(p=>{const it=C.filter(c=>c.p===p);return{it,dn:it.filter(c=>pr[c.d]).length}});
 const streakDays=(()=>{let s=0;for(let i=td-1;i>=1;i--){if(pr[i])s++;else break}return s})();
-document.getElementById('lockBanner').classList.toggle('show',isOwner()&&isLocked());
+document.getElementById('lockBanner').classList.toggle('show',!isUnlocked());
 
 document.getElementById('greeting').innerHTML=`<h1><span class="name">Asad's GenAI Journey</span></h1>
 <div class="tagline">${getGreeting()} \xB7 ${tot} sessions \xB7 LLMs \u2192 RAG \u2192 Agents \u2192 MCP</div>
