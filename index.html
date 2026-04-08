@@ -157,7 +157,7 @@ canvas#confetti{position:fixed;inset:0;z-index:10000;pointer-events:none}
 </div>
 <script>
 const SD='2026-04-07',SK='genai-v5',PK='genai-pace-v5',CK='genai-col-v5',LK='genai-links-v5',AK='genai-auth-v5';
-const TOT=50;
+const TOT=53;
 
 // AUTH — Password is baked in. Change OWNER_HASH to use a different password.
 // Current password: asad2026 — to change, run in browser console: 
@@ -206,9 +206,9 @@ const C=[
 {p:2,d:16,t:'freeCodeCamp \u2014 HuggingFace Transformers & Pipelines',l:'https://www.youtube.com/watch?v=QEaBAZQCtwE',s:'YouTube',dur:'~1hr (first section)'},
 {p:2,d:17,t:'freeCodeCamp \u2014 HuggingFace Fine-tuning & Hub',l:'https://www.youtube.com/watch?v=QEaBAZQCtwE&t=3600',s:'YouTube',dur:'~1hr (second section)'},
 {p:2,d:18,t:'freeCodeCamp \u2014 HuggingFace Advanced (Deployment)',l:'https://www.youtube.com/watch?v=QEaBAZQCtwE&t=7200',s:'YouTube',dur:'~1hr (third section)'},
-{p:2,d:19,t:'freeCodeCamp \u2014 Train Your Own LLM (LoRA + RLHF)',l:'https://www.youtube.com/watch?v=kCc8FmEb1nY',s:'YouTube',dur:'~1hr (watch first half)'},
-{p:2,d:20,t:'freeCodeCamp \u2014 How to Fine-Tune LLMs (QLoRA deep)',l:'https://www.youtube.com/watch?v=eC6Hd1hFvos',s:'YouTube',dur:'~1hr'},
-{p:2,d:21,t:'When to Fine-tune vs RAG vs Prompt Engineering',l:'https://www.youtube.com/watch?v=00Q0G84kq3M',s:'YouTube',dur:'~30min'},
+{p:2,d:19,t:'freeCodeCamp \u2014 How to Fine-Tune LLMs (QLoRA + RLHF)',l:'https://www.youtube.com/watch?v=eC6Hd1hFvos',s:'YouTube',dur:'1hr (first half: SFT + QLoRA)'},
+{p:2,d:20,t:'freeCodeCamp \u2014 How to Fine-Tune LLMs (eval + deploy)',l:'https://www.youtube.com/watch?v=eC6Hd1hFvos&t=3600',s:'YouTube',dur:'1hr (second half: eval + deploy)'},
+{p:2,d:21,t:'IBM \u2014 RAG vs Fine-tuning: When to Use What',l:'https://www.youtube.com/watch?v=T-D1OfcDW1M',s:'YouTube',dur:'8min'},
 {p:2,d:22,t:'DeepLearning.AI \u2014 LangChain for LLM Applications',l:'https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/',s:'DeepLearning.AI',dur:'~1hr video course'},
 {p:2,d:23,t:'DeepLearning.AI \u2014 Evaluating & Debugging LLMs',l:'https://learn.deeplearning.ai/courses/evaluating-debugging-generative-ai',s:'DeepLearning.AI',dur:'~1hr video course'},
 {p:2,d:24,t:'\u{1F3AF} PROJECT: Fine-tune model on sentiment data',l:'https://github.com/new',s:'Build',dur:'~1hr'},
@@ -223,7 +223,7 @@ const C=[
 {p:3,d:31,t:'DeepLearning.AI \u2014 Knowledge Graphs for RAG',l:'https://www.deeplearning.ai/short-courses/knowledge-graphs-rag/',s:'DeepLearning.AI',dur:'~1hr video course'},
 {p:3,d:32,t:'DeepLearning.AI \u2014 Knowledge Graphs RAG (finish)',l:'https://www.deeplearning.ai/short-courses/knowledge-graphs-rag/',s:'DeepLearning.AI',dur:'~1hr video course'},
 {p:3,d:33,t:'DeepLearning.AI \u2014 Agentic Knowledge Graph Construction',l:'https://learn.deeplearning.ai/courses/agentic-knowledge-graph-construction/information',s:'DeepLearning.AI',dur:'~1hr video course'},
-{p:3,d:34,t:'LlamaIndex \u2014 Build RAG from Scratch (official)',l:'https://www.youtube.com/watch?v=jw7Ov3YMNxY',s:'YouTube',dur:'~45min'},
+{p:3,d:34,t:'LlamaIndex \u2014 Build a RAG App from Scratch',l:'https://www.youtube.com/watch?v=a1K4p3Fy_JE',s:'YouTube',dur:'37min'},
 {p:3,d:35,t:'\u{1F3AF} PROJECT: Agentic RAG \u2014 architecture + ingestion',l:'https://github.com/new',s:'Build',dur:'~1hr'},
 {p:3,d:36,t:'\u{1F3AF} PROJECT: Agentic RAG \u2014 retrieval + graph layer',l:'https://github.com/new',s:'Build',dur:'~1hr'},
 {p:3,d:37,t:'\u{1F3AF} PROJECT: Agentic RAG \u2014 eval + deploy + README',l:'https://github.com/new',s:'Build',dur:'~1hr'},
@@ -238,10 +238,13 @@ const C=[
 {p:4,d:44,t:'MCP Explained \u2014 Model Context Protocol crash course',l:'https://www.youtube.com/watch?v=dZV1jGFnZSc',s:'YouTube',dur:'~30min'},
 {p:4,d:45,t:'Build an MCP Server from Scratch (tutorial)',l:'https://www.youtube.com/watch?v=Nt0Gt0ldh6Q',s:'YouTube',dur:'~45min'},
 {p:4,d:46,t:'Google A2A Protocol \u2014 Agent-to-Agent explained',l:'https://www.youtube.com/watch?v=4LRijVGrVSM',s:'YouTube',dur:'~20min'},
-{p:4,d:47,t:'\u{1F3AF} PROJECT: Multi-agent system \u2014 architecture',l:'https://github.com/new',s:'Build',dur:'~1hr'},
-{p:4,d:48,t:'\u{1F3AF} PROJECT: Multi-agent \u2014 tools + MCP integration',l:'https://github.com/new',s:'Build',dur:'~1hr'},
-{p:4,d:49,t:'\u{1F3AF} PROJECT: Multi-agent \u2014 deploy on AWS',l:'https://github.com/new',s:'Build',dur:'~1hr'},
-{p:4,d:50,t:'\u{1F3AF} PROJECT: Polish README + ship it',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:4,d:47,t:'Claude Code + MCP \u2014 Build AI agents with Claude',l:'https://www.youtube.com/watch?v=N-wUaAFoa5o',s:'YouTube',dur:'~40min'},
+{p:4,d:48,t:'Claude Skills + Subagents \u2014 Production agent patterns',l:'https://www.youtube.com/watch?v=xRFCroqjJHs',s:'YouTube',dur:'~30min'},
+{p:4,d:49,t:'\u{1F3AF} PROJECT: Multi-agent system \u2014 architecture',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:4,d:50,t:'\u{1F3AF} PROJECT: Multi-agent \u2014 tools + MCP integration',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:4,d:51,t:'\u{1F3AF} PROJECT: Multi-agent \u2014 deploy on AWS',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:4,d:52,t:'\u{1F3AF} PROJECT: Claude Agent for ArtemisAI with MCP',l:'https://github.com/new',s:'Build',dur:'~1hr'},
+{p:4,d:53,t:'\u{1F3AF} PROJECT: Polish all READMEs + ship everything',l:'https://github.com/new',s:'Build',dur:'~1hr'},
 ];
 
 const PI={
@@ -254,6 +257,7 @@ const projects=[
   {id:'p1',phase:2,name:'ArtemisAI: Fine-tune Sentiment Model',desc:'Fine-tune XLM-RoBERTa on ArtemisAI Facebook post data (111K posts) for Tier 1 labelling. Test QLoRA approach, push to HuggingFace. Proof-of-concept for Sprint 4 NLP pipeline.',placeholder:'https://huggingface.co/asad-ikram/artemisai-sentiment'},
   {id:'p2',phase:3,name:'ArtemisAI: Art-E RAG Prototype',desc:'Build Art-E\'s retrieval layer as test: Pinecone vector search over post embeddings + knowledge graph of page relationships. Hybrid RAG with evaluation. Sprint 16-18 proof-of-concept.',placeholder:'https://github.com/asad-ikram/arte-rag-prototype'},
   {id:'p3',phase:4,name:'ArtemisAI: Art-E Agentic System',desc:'Test Art-E as multi-agent: query understanding agent \u2192 tool selection \u2192 Redshift queries + SageMaker SHAP calls \u2192 streaming response. Smart model routing (GPT-4/mini/LLaMA). Sprint 16-21 prototype.',placeholder:'https://github.com/asad-ikram/arte-agent-prototype'},
+  {id:'p4',phase:4,name:'ArtemisAI: Claude Agent with MCP',desc:'Build Art-E as a Claude Code agent with MCP servers for Redshift, Pinecone, and SageMaker. Claude Skills for query patterns. Subagents for parallel analysis. The fastest path to a working Art-E prototype.',placeholder:'https://github.com/asad-ikram/arte-claude-agent'},
 ];
 
 const skillMap={
@@ -303,10 +307,13 @@ const skillMap={
 44:'You understand Model Context Protocol (MCP) fundamentals',
 45:'You can build MCP servers and connect agents to external tools',
 46:'You understand A2A (Agent-to-Agent protocol) for agent interop',
-47:'\u{1F3AF} You can architect Art-E as a multi-agent system!',
-48:'\u{1F3AF} You can connect Art-E to Redshift + SageMaker via MCP!',
-49:'\u{1F3AF} You can deploy Art-E\u2019s agentic pipeline on AWS!',
-50:'\u{1F3AF} You can ship Art-E prototype with streaming + citations!',
+47:'You can build AI agents with Claude Code + MCP servers',
+48:'You understand Claude Skills, subagents, and production agent patterns',
+49:'\u{1F3AF} You can architect Art-E as a multi-agent system!',
+50:'\u{1F3AF} You can connect Art-E to Redshift + SageMaker via MCP!',
+51:'\u{1F3AF} You can deploy Art-E\u2019s agentic pipeline on AWS!',
+52:'\u{1F3AF} You can build a Claude Agent with MCP for ArtemisAI!',
+53:'\u{1F3AF} You can ship ALL projects with documentation!',
 };
 
 const phaseSkills={
@@ -363,10 +370,13 @@ const artemisMap={
 44:'<b>MCP</b> = Art-E connects to Redshift, SageMaker SHAP, Facebook API, Google Analytics through one protocol.',
 45:'<b>MCP servers</b> = build servers for Art-E: Redshift query server, SageMaker inference server, Facebook API server.',
 46:'<b>A2A</b> = sentiment agent talks to engagement agent talks to virality agent. A2A protocol for Sprint 20+ multi-agent Art-E.',
-47:'<b>PROJECT</b> = Architect Art-E: query agent \u2192 analysis/lookup agent \u2192 Redshift/SageMaker tools \u2192 response with citations.',
-48:'<b>PROJECT</b> = Connect to Redshift + SageMaker + Pinecone via MCP. Test full tool chain.',
-49:'<b>PROJECT</b> = Deploy: Lambda agents, API Gateway SSE streaming, DynamoDB memory. Test real queries.',
-50:'<b>PROJECT</b> = Polish README, document architecture, demo video. Sprint 16-21 proof-of-concept for Alex.',
+47:'<b>Claude Code + MCP</b> = build Art-E as a Claude agent with MCP servers connecting to Redshift, SageMaker, Pinecone. The exact stack ArtemisAI needs.',
+48:'<b>Claude Skills + Subagents</b> = production patterns: Claude Skills for Art-E query types, subagents for parallel analysis (sentiment + engagement + virality), CLAUDE.md for team standards.',
+49:'<b>PROJECT</b> = Architect Art-E: query agent \u2192 analysis/lookup agent \u2192 Redshift/SageMaker tools \u2192 response with citations.',
+50:'<b>PROJECT</b> = Connect to Redshift + SageMaker + Pinecone via MCP. Test full tool chain.',
+51:'<b>PROJECT</b> = Deploy: Lambda agents, API Gateway SSE streaming, DynamoDB memory. Test real queries.',
+52:'<b>PROJECT</b> = Build a Claude Agent with MCP that connects to ArtemisAI\u2019s Redshift + Pinecone. Use Claude Skills for query patterns. Test with real Art-E queries.',
+53:'<b>PROJECT</b> = Polish all READMEs, document all 4 projects, record demo videos. Ship everything to GitHub.',
 };
 
 const projectGuides={
@@ -392,7 +402,15 @@ p3:{title:'\u{1F916} How to Build: Art-E Agentic System',steps:[
 '\u2462 <b>Model router</b> \u2014 GPT-4o-mini for simple lookups (60%, ~$0.002/q). GPT-4 for complex analysis (25%, ~$0.03/q). Fine-tuned LLaMA 8B for patterns (15%, ~$0.001/q). Monthly cost at 100 pages: ~$15 with Redis caching. <i>(Uses: Day 39 conditional branching, Day 21 decision framework)</i>',
 '\u2463 <b>Multi-agent proactive insights</b> \u2014 crewAI: SentimentAgent + EngagementAgent + ViralityAgent + AudienceAgent run parallel, SynthesisAgent combines \u2192 daily 8AM briefing (Sprint 20 VD-123). <i>(Uses: Day 41 crewAI multi-agent)</i>',
 '\u2464 <b>Conversation memory</b> \u2014 DynamoDB: last 5 turns per user. "Last time you asked about posting times, I found Tuesday 6PM." Redis for session cache (1hr TTL for data, 24hr for explanations). <i>(Uses: Day 42-43 agent use cases)</i>',
-'\u2465 <b>SSE streaming + deploy</b> \u2014 API Gateway \u2192 Lambda \u2192 SSE to React. Typewriter effect. Citations: [Source: post_labels, 2026-04-01]. Suggestion pills for follow-up questions. <i>(Uses: Day 49 AWS deploy, Day 50 polish)</i>',
+'\u2465 <b>SSE streaming + deploy</b> \u2014 API Gateway \u2192 Lambda \u2192 SSE to React. Typewriter effect. Citations: [Source: post_labels, 2026-04-01]. Suggestion pills for follow-up questions. <i>(Uses: Day 51 AWS deploy)</i>',
+]},
+p4:{title:'\u{1F916} How to Build: Claude Agent for ArtemisAI',steps:[
+'\u2460 <b>Install Claude Code</b> \u2014 npm install -g @anthropic-ai/claude-code. Set up CLAUDE.md with ArtemisAI coding standards, Redshift schema, and Art-E query patterns. <i>(Uses: Day 47 Claude Code + MCP)</i>',
+'\u2461 <b>Build 3 MCP servers</b> \u2014 Redshift MCP (query_posts, get_engagement, get_sentiment), Pinecone MCP (search_similar, embed_post), SageMaker MCP (predict_virality, explain_post). Use Python MCP SDK. <i>(Uses: Day 44-45 MCP fundamentals + building)</i>',
+'\u2462 <b>Create Claude Skills</b> \u2014 art-e-query-skill (understands ArtemisAI query types), art-e-analysis-skill (knows how to compare periods, find anomalies), art-e-report-skill (formats daily briefings). <i>(Uses: Day 48 Claude Skills + subagents)</i>',
+'\u2463 <b>Build subagents</b> \u2014 SentimentSubagent (queries sentiment data), EngagementSubagent (queries engagement metrics), ViralitySubagent (predicts post performance). Main agent orchestrates all three. <i>(Uses: Day 48 subagent patterns)</i>',
+'\u2464 <b>Test with real queries</b> \u2014 "Why did my Tuesday post go viral?", "Compare drinking meme pages vs prison culture", "Generate my daily briefing", "What content should I post next?". <i>(Uses: Day 47-48 Claude agent patterns)</i>',
+'\u2465 <b>Deploy + document</b> \u2014 Package as a Claude Code project with CLAUDE.md, MCP configs, Skills folder. Push to GitHub. Document how to set up and run. Demo video for Alex. <i>(Uses: Day 53 polish + ship)</i>',
 ]},
 };
 
@@ -429,7 +447,7 @@ function closeCele(){document.getElementById('celeOverlay').classList.remove('sh
 document.getElementById('celeOverlay').onclick=e=>{if(e.target===e.currentTarget)closeCele()};
 function sessionCele(day){playCheer();launchConfetti(35);const sk=skillMap[day]||'New skill unlocked!',it=C.find(c=>c.d===day);showCele(`<div class="cele-emoji">\u{2705}</div><div class="cele-title">Session ${day} Done!</div><div class="cele-sub">${it.t}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F513} Skill Unlocked</div><div class="cele-skill-item"><span>\u2713</span> ${sk}</div></div><button class="cele-btn" onclick="closeCele()">Keep Going</button>`)}
 function phaseCele(phase){playFanfare();launchConfetti(120);const ps=phaseSkills[phase];showCele(`<div class="cele-emoji">${PI[phase].i}\u{1F389}</div><div class="cele-title">${ps.title}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F4AA} You Can Now</div>${ps.skills.map(s=>`<div class="cele-skill-item"><span>\u2713</span> ${s}</div>`).join('')}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--accent3)">\u{1F6E0}\uFE0F What You Can Build</div>${ps.build.map(b=>`<div class="cele-skill-item"><span>\u{1F680}</span> ${b}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Let's Go!</button>`);setTimeout(()=>launchConfetti(80),600);setTimeout(()=>launchConfetti(60),1200)}
-function grandCele(){playGrand();launchConfetti(200);showCele(`<div class="cele-emoji" style="font-size:4rem">\u{1F3C6}\u{1F451}\u{1F389}</div><div class="cele-title" style="font-size:1.8rem">ALL 50 SESSIONS DONE!</div><div class="cele-sub">Asad, you legend.<br>LLMs \u2192 Fine-tuning \u2192 All RAG Types \u2192 Agents \u2192 MCP \u2192 A2A<br><strong>3 projects. 50 sessions. Zero fluff.</strong></div><button class="cele-game-btn" onclick="closeCele();openGame()">\u{1F3AE} Claim Reward: Neural Net Catcher</button><br><button class="cele-btn" onclick="closeCele()" style="margin-top:0.5rem;background:transparent;border:1px solid var(--border);color:var(--text-dim)">Close</button>`);setTimeout(()=>launchConfetti(150),700);setTimeout(()=>launchConfetti(120),1400)}
+function grandCele(){playGrand();launchConfetti(200);showCele(`<div class="cele-emoji" style="font-size:4rem">\u{1F3C6}\u{1F451}\u{1F389}</div><div class="cele-title" style="font-size:1.8rem">ALL 53 SESSIONS DONE!</div><div class="cele-sub">Asad, you legend.<br>LLMs \u2192 Fine-tuning \u2192 All RAG Types \u2192 Agents \u2192 MCP \u2192 Claude Agents \u2192 A2A<br><strong>4 projects. 53 sessions. Zero fluff.</strong></div><button class="cele-game-btn" onclick="closeCele();openGame()">\u{1F3AE} Claim Reward: Neural Net Catcher</button><br><button class="cele-btn" onclick="closeCele()" style="margin-top:0.5rem;background:transparent;border:1px solid var(--border);color:var(--text-dim)">Close</button>`);setTimeout(()=>launchConfetti(150),700);setTimeout(()=>launchConfetti(120),1400)}
 function giftPopup(phase){const ps=phaseSkills[phase],pr=ld(SK,{}),items=C.filter(c=>c.p===phase),dn=items.filter(c=>pr[c.d]).length,unlocked=dn>=items.length;
 if(unlocked)showCele(`<div class="cele-emoji">${PI[phase].i}\u{1F381}</div><div class="cele-title">${ps.title}</div><div class="cele-skills"><div class="cele-skills-title">\u{1F4AA} Skills Unlocked</div>${ps.skills.map(s=>`<div class="cele-skill-item"><span>\u2713</span> ${s}</div>`).join('')}</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--accent3)">\u{1F6E0}\uFE0F What You Can Build</div>${ps.build.map(b=>`<div class="cele-skill-item"><span>\u{1F680}</span> ${b}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Nice!</button>`);
 else showCele(`<div class="cele-emoji">\u{1F512}</div><div class="cele-title">${PI[phase].n}</div><div class="cele-sub">Complete ${items.length-dn} more sessions to unlock!</div><div class="cele-skills"><div class="cele-skills-title" style="color:var(--text-dim)">\u{1F381} Rewards Waiting</div>${ps.skills.map(s=>`<div class="cele-skill-item" style="opacity:0.4">\u{1F512} ${s}</div>`).join('')}</div><button class="cele-btn" onclick="closeCele()">Back to work</button>`)}
@@ -452,7 +470,7 @@ document.getElementById('lockBanner').classList.toggle('show',!isUnlocked());
 
 document.getElementById('greeting').innerHTML=`<h1><span class="name">Asad's GenAI Journey</span></h1>
 <div class="tagline">${getGreeting()} \xB7 ${tot} sessions \xB7 LLMs \u2192 RAG \u2192 Agents \u2192 MCP</div>
-<div class="motivation">${done===0?`50 sessions. No fluff. Concept videos + hands-on courses + 3 projects. <span>Day 1: Karpathy's Deep Dive. Let's go.</span>`:done>=tot?`<span>All ${tot} sessions done.</span> 3 projects shipped. You're an AI engineer now.`:streakDays>=3?`<span>${streakDays}-day streak \u{1F525}</span> ${pj.rem} left. Done by ${fmt(pj.ed)}.`:`${done} down, ${pj.rem} to go. Finishing by <span>${fmt(pj.ed)}</span>.`}</div>`;
+<div class="motivation">${done===0?`53 sessions. No fluff. Concept videos + hands-on courses + 4 projects. <span>Day 1: Karpathy's Deep Dive. Let's go.</span>`:done>=tot?`<span>All ${tot} sessions done.</span> 3 projects shipped. You're an AI engineer now.`:streakDays>=3?`<span>${streakDays}-day streak \u{1F525}</span> ${pj.rem} left. Done by ${fmt(pj.ed)}.`:`${done} down, ${pj.rem} to go. Finishing by <span>${fmt(pj.ed)}</span>.`}</div>`;
 
 document.getElementById('statsBar').innerHTML=`<div class="stat-card"><div class="stat-label">Done</div><div class="stat-value cw">${done}/${tot}</div></div><div class="stat-card"><div class="stat-label">How AI Works</div><div class="stat-value c1">${pd[0].dn}/${pd[0].it.length}</div></div><div class="stat-card"><div class="stat-label">LLM Mastery</div><div class="stat-value c2">${pd[1].dn}/${pd[1].it.length}</div></div><div class="stat-card"><div class="stat-label">RAG Types</div><div class="stat-value c3">${pd[2].dn}/${pd[2].it.length}</div></div><div class="stat-card"><div class="stat-label">Agents+MCP</div><div class="stat-value c4">${pd[3].dn}/${pd[3].it.length}</div></div>`;
 
